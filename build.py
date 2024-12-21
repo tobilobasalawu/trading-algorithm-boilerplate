@@ -5,7 +5,6 @@ import pandas as pd
 
 
 def init_data(df, moving_avg=True, ma_period=20, rsi_period=14):
-    print(df.head())
     datetimes = df.index.to_series()[ma_period:]
     closes = df.iloc[:, 0]
     highs = df.iloc[ma_period:, 1]
@@ -59,6 +58,7 @@ def build(df, moving_avg=True, ma_period=20, rsi_period=14, add_csv=True):
         high=data.highs,
         low=data.lows,
         close=data.closes,
+        name="Price",
         increasing=dict(line=dict(color="#199e5c")),
         decreasing=dict(line=dict(color="#eb4034")),
         increasing_fillcolor="#199e5c",
@@ -66,11 +66,11 @@ def build(df, moving_avg=True, ma_period=20, rsi_period=14, add_csv=True):
     )
 
     sma_line = go.Scatter(
-        x=data.datetimes,  # Ensure this matches the candlestick's x-axis
-        y=data.sma,  # The moving average values
-        mode="lines",  # Line chart
-        name="SMA",  # Legend label for the moving average
-        line=dict(color="white", width=1),  # Customize the line style
+        x=data.datetimes,
+        y=data.sma,
+        mode="lines",
+        name="SMA",
+        line=dict(color="white", width=1),
     )
 
     fig = go.Figure(data=[candlestick, sma_line])
@@ -80,6 +80,7 @@ def build(df, moving_avg=True, ma_period=20, rsi_period=14, add_csv=True):
             x=data.entries.index,
             y=data.entries,
             mode="markers",
+            name="BUY",
             marker_symbol="diamond-dot",
             marker_size=10,
             marker_line_width=1,
@@ -94,6 +95,7 @@ def build(df, moving_avg=True, ma_period=20, rsi_period=14, add_csv=True):
             x=data.exits.index,
             y=data.exits,
             mode="markers",
+            name="SELL",
             marker_symbol="diamond-dot",
             marker_size=10,
             marker_line_width=1,
