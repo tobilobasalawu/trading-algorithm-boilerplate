@@ -1,42 +1,38 @@
 # Price action mean reversion backtesting
-import statistics
-
-from dash import Dash, html, dcc, Output, Input
-import pandas as pd
-import numpy as np
-
-import api.data as api
-import utils.calcs as calcs
+from dash import Dash, html, dcc, Input, Output
 import utils.build as graph
+import api.fetch as api
 
-app = Dash()
+app = Dash(
+    __name__,
+    external_stylesheets=[
+        "https://cdn.jsdelivr.net/npm/bootswatch@5.1.3/dist/cyborg/bootstrap.min.css"
+    ],
+)
 
-
+# App layout
 app.layout = html.Div(
     [
-        dcc.Graph(id="candles"),
+        dcc.Graph(id="candles", style={"height": "100vh"}),
         dcc.Interval(id="interval", interval=200000),
     ]
 )
 
 
-def init(moving_avg=True, ma_period=20):
-    df = api.get_df_selected_tf("TSLA", "15m", "2024-12-11", "2024-12-18").iloc[
-        :-1
-    ]  # exclude last row (in case it's a live candle)
-    df_object = api.DataFrame(df)
-    closes, highs, lows, opens = df_object.get_ohlc(moving_avg)
+@app.callback(
+    Output("candles", "figure"),
+    Input("interval", "n_intervals"),
+)
+def update_graph(n_intervals):
+    df = api.get_df_selected_tf("JMIA", "15m", "2024-12-01", "2024-12-20").iloc[:-1]
 
-    if moving_avg == True:
-        sma = calcs.calc_sma(
-            closes, ma_period
-        )  # List of closing values, moving-average period length
-        closes = closes[ma_period:]  # Remove excess closing values
-
-    print(df)
-    graph.build(df)
+    try:
+        return graph.build(df, moving_avg=True, ma_period=50, add_csv=True)
+    except Exception as e:
+        print(f"\nGraph failed to load: {e}\n")
+    if not Exception:
+        print("\n<========== Graph updated successfully ==========>\n")
 
 
 def main():
     app.run_server(debug=True)
-    init()

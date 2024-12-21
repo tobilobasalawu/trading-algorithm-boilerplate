@@ -1,12 +1,14 @@
-def calc_sma(closes, ma_period):
-    indeces = {}
-    sma = []
-    for i in range(len(closes)):
-        indeces[closes[i]] = i
-    # Storing the index of each close in the list of closes
+def indicators(data_obj, rsi):
+    entries = {}
+    exits = {}
+    print(type(rsi))
+    print(type(data_obj.datetimes))
+    print(type(data_obj.opens))
+    print(type(data_obj.closes))
+    print(type(data_obj.highs))
 
-    for num in closes[ma_period:]:
-        sma.append(sum(closes[indeces[num] - ma_period : indeces[num]]) / ma_period)
-    # Going through each point and getting the mean of the previous {ma_period} points (default is 20)
+    for num in rsi:
+        if num < 30:
+            pass
 
-    return sma
+    return entries, exits
