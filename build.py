@@ -1,14 +1,16 @@
 import plotly.graph_objects as go
 import api.GraphData as api
 import utils.calcs as calcs
+import pandas as pd
 
 
 def init_data(df, moving_avg=True, ma_period=20, rsi_period=14):
+    print(df.head())
     datetimes = df.index.to_series()[ma_period:]
-    closes = df.iloc[:, 1]
-    highs = df.iloc[ma_period:, 2]
-    lows = df.iloc[ma_period:, 3]
-    opens = df.iloc[ma_period:, 4]
+    closes = df.iloc[:, 0]
+    highs = df.iloc[ma_period:, 1]
+    lows = df.iloc[ma_period:, 2]
+    opens = df.iloc[ma_period:, 3]
     rsi = []
     sma = []
     entries = []
@@ -45,10 +47,11 @@ def init_data(df, moving_avg=True, ma_period=20, rsi_period=14):
     return data_obj
 
 
-def build(df, moving_avg=True, ma_period=20, add_csv=True):
+def build(df, moving_avg=True, ma_period=20, rsi_period=14, add_csv=True):
+
     if add_csv == True:
         df.to_csv("data.csv")
-    data = init_data(df, moving_avg, ma_period)
+    data = init_data(df, moving_avg, ma_period, rsi_period)
 
     candlestick = go.Candlestick(
         x=data.datetimes,
@@ -74,7 +77,7 @@ def build(df, moving_avg=True, ma_period=20, add_csv=True):
 
     fig.add_trace(
         go.Scatter(
-            x=data.datetimes,
+            x=data.entries.index,
             y=data.entries,
             mode="markers",
             marker_symbol="diamond-dot",
@@ -82,13 +85,13 @@ def build(df, moving_avg=True, ma_period=20, add_csv=True):
             marker_line_width=1,
             marker_line_color="#262626",
             marker_color="#0ac91d",
-            hovertemplate="Entry price: %{y}",
+            hovertemplate="BUY: %{y}",
         )
     )
 
     fig.add_trace(
         go.Scatter(
-            x=data.datetimes,
+            x=data.exits.index,
             y=data.exits,
             mode="markers",
             marker_symbol="diamond-dot",
@@ -96,7 +99,7 @@ def build(df, moving_avg=True, ma_period=20, add_csv=True):
             marker_line_width=1,
             marker_line_color="#262626",
             marker_color="#b0160e",
-            hovertemplate="Exit price: %{y}",
+            hovertemplate="SELL: %{y}",
         )
     )
 
