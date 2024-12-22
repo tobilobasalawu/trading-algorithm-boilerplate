@@ -6,7 +6,7 @@ It is now easier than ever to get stuck in to the maths and **create your own in
 
 You will be able to easily test your algorithm to see how it performs against both live and historical data. **This program only performs simulations, and does not trade with real money**.
 
-_Please note: this project is a work-in-progress and may not yet come with a comprehensive list of visualisation features. This project is however open to pull requsts and you may contribute your own if you wish to do so._
+_Please note: this project is a work-in-progress and may not yet come with a comprehensive list of visualisation features. This project is however open to pull requsts and you may contribute if you wish to do so._
 
 ## Getting started
 
@@ -22,7 +22,7 @@ Go to the top right of this repository and click 'fork'. This will add a copy of
 
 ### Step 3
 
-Create a new folder on your laptop. Type into your command line `cd path/to/your/new/folder` to change the working directory to your new folder. Then paste the following:
+Create a new folder on your laptop. Type into your terminal command line `cd path/to/your/new/folder` to change the working directory to your new folder. Then paste the following:
 
 ```shell
 git clone https://github.com/your-username/trading-indicator.git
@@ -89,6 +89,8 @@ Run the server:
 ```shell
 python3 main.py
 ```
+
+---
 
 Now you should see something like this in your terminal:
 
@@ -215,13 +217,14 @@ rsi = my_data_object.calc_rsi()
 # Calculate the RSI from the data in my_data_object
 
 sma = my_data_object.calc_sma()
+# Calculate the Simple Moving Average from the data in my_data_object
 ```
 
 ### api/fetch
 
-`get_df_selected_tf()`: Get the yfinance dataframe for a given timeframe.
-`get_df_recent()`: Get the most recent yfinance dataframe.
-`get_settings()`: Load the settings in `config.json` as a Python object.
+- `get_df_selected_tf()`: Get the yfinance dataframe for a given timeframe.
+- `get_df_recent()`: Get the most recent yfinance dataframe.
+- `get_settings()`: Load the settings in `config.json` as a Python object.
 
 ### core/Account
 
@@ -244,12 +247,12 @@ See above for how to start adding indicators in this file.
 
 ### utils/convert.py
 
-`series_to_lists(data)`: Takes a Pandas dataframe as a parameter, and returns 5 datetime OHLC values as lists.
+- `series_to_lists(data)`: Takes a Pandas dataframe as a parameter, and returns 5 datetime OHLC values as lists.
 
 ### utils/indicator.py
 
-`add(dict, key, value)`: Adds a key-value pair to a dictionary, and returns the new dictionary.
-`clear()`: Clears a dictionary.
+- `add(dict, key, value)`: Adds a key-value pair to a dictionary, and returns the new dictionary.
+- `clear()`: Clears a dictionary.
 
 ## Future features
 
