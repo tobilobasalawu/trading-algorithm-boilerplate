@@ -109,7 +109,7 @@ The app is now all set up for you to start creating your algorithm in the `core/
 
 ### How do I start adding indicators?
 
-All indicators that are rendered on the graph are grabbed from the `entries` and `exits` dictionaries. They take a key (a datetime: string) and a value (close price: integer) - this is the closing price for any given candle.
+All indicators that are rendered on the graph are grabbed from the `entries` and `exits` dictionaries within the `order.py` file - this is where you'll be implementing your logic. They take a key (a datetime: string) and a value (close price: integer) - this is the closing price for any given candle.
 
 ```python
 # Format => datetime (string): close price (integer)
@@ -278,3 +278,7 @@ If you'd like to contribute to the project, follow these steps:
 
 - Asset class focus: US equities
 - Data source: yfinance
+
+## Contact
+
+If anything is unclear or you'd like to contact me, please reach out at _jamie.wells@studentvault.co.uk_.
