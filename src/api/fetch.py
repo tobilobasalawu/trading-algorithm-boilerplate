@@ -1,4 +1,4 @@
-import json
+import json, os
 import yfinance as yf
 
 
@@ -12,12 +12,16 @@ def get_df_selected_tf(
 
 
 # AAPL, "15m", "5d"
-def get_df_recent(ticker, _interval, _period):  # For a selected timeframe
+def get_df_recent(ticker, _interval, _period):  # For the most recent timeframe
     data = yf.download(ticker, interval=_interval, period=_period)
 
     return data, ticker
 
 
+# Get settings from config.json
 def get_settings():
-    with open("config.json", "r") as settings:
+    current_directory = os.path.dirname(os.path.abspath(__file__))
+    config_path = os.path.join(current_directory, "config.json")
+
+    with open(config_path, "r") as settings:
         return json.load(settings)

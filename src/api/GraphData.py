@@ -1,3 +1,6 @@
+# Graph data class, has all graph data and can perform certain calculations on the data
+
+
 class GraphData:
     def __init__(
         self,

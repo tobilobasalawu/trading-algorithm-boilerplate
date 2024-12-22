@@ -8,7 +8,7 @@
   "movingAvg": true,
   "maPeriod": 50,
   "rsiPeriod": 14,
-  "addCsv": true,
+  "addCsv": false,
   "initialBalance": 1000,
-  "baseOrderValue": 800
+  "baseOrderValue": 1000
 }

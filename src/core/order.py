@@ -12,6 +12,9 @@ def indicators(account, data_obj, rsi):
     log = [-1]
 
     datetimes, opens, closes, highs, lows = convert.series_to_lists(data_obj)
+    # You now have all the datetimes, opens, closes, highs and lows in separate lists
+
+    # <==================== Add your custom indicator logic below ====================>
 
     for i in range(len(rsi)):
         if rsi[i] < 30 and log[-1] != "BUY":
@@ -28,6 +31,9 @@ def indicators(account, data_obj, rsi):
             log.append("SELL")
         else:
             continue
+        # Adds a buy/sell signal if the RSI drops below/reaches a certain value
+
+    # <==================== Add your custom indicator logic above ====================>
 
     entries = pd.Series(entries.values(), index=entries.keys())
     exits = pd.Series(exits.values(), index=exits.keys())

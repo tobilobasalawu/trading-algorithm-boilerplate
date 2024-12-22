@@ -6,7 +6,7 @@ import core.order as order
 config = fetch.get_settings()
 
 
-def init_data(account, df, moving_avg=True, ma_period=20, rsi_period=14):
+def init_data(account, df, moving_avg, ma_period, rsi_period):
     datetimes = df.index.to_series()[ma_period:]
     closes = df.iloc[:, 0]
     highs = df.iloc[ma_period:, 1]
@@ -34,7 +34,7 @@ def init_data(account, df, moving_avg=True, ma_period=20, rsi_period=14):
 
     rsi = data_obj.calc_rsi()
 
-    if moving_avg == True:
+    if config["movingAvg"]:
         data_obj.sma = (
             data_obj.calc_sma()
         )  # List of closing values, moving-average period length
@@ -46,6 +46,7 @@ def init_data(account, df, moving_avg=True, ma_period=20, rsi_period=14):
 
     data_obj.entries, data_obj.exits = order.indicators(account, data_obj, rsi)
 
+    profit_colour = "\033[0m"
     if account.profit > 0:
         profit_colour = "\033[32m"
     elif account.profit < 0:
@@ -56,19 +57,19 @@ def init_data(account, df, moving_avg=True, ma_period=20, rsi_period=14):
         "\n=====================================================================================\n"
     )
     print(
-        f"Made {len(account.orders) // 2} trades | Volume traded: ${account.volume:.2f} | {profit_colour}Return: {((account.profit / config["initialBalance"]) * 100):.2f}%{reset_colour} | {profit_colour}Profit: ${account.profit:.2f}{reset_colour}\n"
+        f"Made {len(account.orders) // 2} trades | Volume traded: ${account.volume:.2f} | {profit_colour}Return: {((account.profit / config['initialBalance']) * 100):.2f}%{reset_colour} | {profit_colour}Profit: ${account.profit:.2f}{reset_colour}\n"
     )
 
     return data_obj
 
 
-def build(
-    account, df, ticker, moving_avg=True, ma_period=20, rsi_period=14, add_csv=True
-):
+def build(account, df, ticker):
 
-    if add_csv == True:
+    if config["addCsv"] == True:
         df.to_csv("data.csv")
-    data = init_data(account, df, moving_avg, ma_period, rsi_period)
+    data = init_data(
+        account, df, config["movingAvg"], config["maPeriod"], config["rsiPeriod"]
+    )
 
     candlestick = go.Candlestick(
         x=data.datetimes,
@@ -129,7 +130,7 @@ def build(
         yaxis_title="Price ($)",
         xaxis_rangeslider_visible=False,
         template="plotly_dark",
-        xaxis=dict(type="category", tickmode="linear", dtick=ma_period),
+        xaxis=dict(type="category", tickmode="linear", dtick=config["maPeriod"]),
     )
 
     return fig

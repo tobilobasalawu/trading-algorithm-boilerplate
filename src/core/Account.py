@@ -15,7 +15,7 @@ class Account:
         self.profit = profit
         self.volume = volume
 
-    def buy_order(self, order_value, stock_price):  # Place an order
+    def buy_order(self, order_value, stock_price):  # Place a buy order
         order = {
             "type": "BUY",
             "amount": order_value,
@@ -35,7 +35,7 @@ class Account:
         )
         """
 
-    def sell_order(self, stock_price):
+    def sell_order(self, stock_price):  # Place a sell order
         units = self.orders[-1]["units"]
         return_sum = stock_price * units
 
@@ -59,3 +59,9 @@ class Account:
         """
 
         self.orders.append(order)
+
+    def check_balance(self):  # Does an initial balance check
+        if config["initialBalance"] < config["baseOrderValue"]:
+            return False
+        else:
+            return True
