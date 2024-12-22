@@ -1,6 +1,6 @@
 # The Easiest Way to Create your Own Trading Algorithm!
 
-Creating your own trading strategy has always been something you've wanted to explore, but you've always thought "it'll be way too hard" or "there will be so much learning I'll have to do beforehand", or maybe you're only really into the maths/finance aspect?
+Creating your own trading strategy has always been something you've wanted to explore, but you've always thought "it'll be way too hard" or "there will be so much learning I'll have to do beforehand", or maybe you're only really into the maths/finance aspect and don't want to bother with all the technical stuff?
 
 It is now easier than ever to get stuck in to the maths and **create your own indicators** on a pre-setup Plotly graph. You won't need to worry about technical setup with this **stock trading algorithm bootstrapper**, featuring various charting aspects, realtime indicators, simple implementation and a wide range of configurable settings.
 
@@ -12,7 +12,7 @@ You won't need any knowledge of UI or various Python frameworks - this bootstrap
 
 ### Step 1
 
-Make sure you have Python installed on your laptop. If you don't have it installed, you can install the latest version [here](https://www.python.org/downloads/)
+Make sure you have Python installed on your laptop. If you don't have it installed, you can install the latest version [here](https://www.python.org/downloads/).
 
 ### Step 2
 
@@ -60,6 +60,8 @@ python main.py
 
 ### **MacOS/Linux**
 
+Create a virtual environment to install your packages:
+
 ```shell
 python3 -m venv .venv
 ```
@@ -93,9 +95,23 @@ Dash is running on http://127.0.0.1:8050/
 
 Paste this URL into your browser and you should see a candlestick graph. Each time you update your code, this graph will automatically update.
 
+If you shut this down and decide you want to re-run it, you won't have to create a new virtual environment, you'll just have to re-activate your existing one.
+
 ## Docs
 
 All the configurable settings can be found in [config.json](https://github.com/JamieWells1/trading-indicator/blob/main/config.json). Have a play around with this and decide what settings you want for your trading strategy.
+
+### config.json
+
+- `ticker`: Change the stock being loaded
+- `mostRecent`: Set whether the chart uses the most recent data for the loaded stock
+- `interval`: Specifies the time interval between each candle in the chart
+- `startDate`: Set when the chart should load data from (only applies if `mostRecent` is set to false)
+- `endDate`: Set when the chart should load data up to (only applies if `mostRecent` is set to false)
+- `timePeriod`: Specifies the time period used for analyzing data (only applies if `mostRecent` is set to true)
+- `movingAvg`: Specifies whether to calculate and display a **Moving Average** (MA) on the chart
+- `maPeriod`: Defines the period (number of candles) used to calculate the Moving Average
+- `rsiPeriod`:
 
 ## Future features
 
