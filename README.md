@@ -12,7 +12,7 @@ You won't need any knowledge of UI or various Python frameworks - this bootstrap
 
 ### Step 1
 
-Make sure you have Python installed on your laptop. If you don't have it installed, you can install the latest version [https://www.python.org/downloads/](here)
+Make sure you have Python installed on your laptop. If you don't have it installed, you can install the latest version [here](https://www.python.org/downloads/)
 
 ### Step 2
 
@@ -30,7 +30,7 @@ git clone https://github.com/your-username/trading-indicator.git
 
 You now have a local copy of the forked repository in your new folder. In order to get it running, copy these 4 simple commands:
 
-**Windows**
+### **Windows**
 
 Create a virtual environment to install your packages:
 
@@ -58,7 +58,7 @@ python main.py
 
 ---
 
-**MacOS/Linux**
+### **MacOS/Linux**
 
 ```shell
 python3 -m venv .venv
@@ -95,7 +95,7 @@ Paste this URL into your browser and you should see a candlestick graph. Each ti
 
 ## Docs
 
-All the configurable settings can be found in [https://github.com/JamieWells1/trading-indicator/blob/main/config.json](config.json). Have a play around with this and decide what settings you want for your trading strategy.
+All the configurable settings can be found in [config.json](https://github.com/JamieWells1/trading-indicator/blob/main/config.json). Have a play around with this and decide what settings you want for your trading strategy.
 
 ## Future features
 
