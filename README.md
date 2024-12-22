@@ -10,7 +10,7 @@ _Please note: this project is a work-in-progress and may not yet come with a com
 
 ## Getting started
 
-You won't need any knowledge of UI or various Python frameworks - this bootstrapper is designed for people who know (or want to learn) some Python, and want to put their coding and maths skills to the test. See the guide below for getting setup in under 5 minutes:
+You won't need any knowledge of UI development or various Python frameworks - this bootstrapper is designed for people who know (or want to learn) some Python, and want to put their coding and maths skills to the test. See the guide below for getting setup in under 5 minutes:
 
 ### Step 1
 
@@ -90,9 +90,9 @@ Run the server:
 python3 main.py
 ```
 
----
+## Setup result
 
-Now you should see something like this in your terminal:
+You should now see something like this in your terminal:
 
 ```
 Dash is running on http://127.0.0.1:8050/
