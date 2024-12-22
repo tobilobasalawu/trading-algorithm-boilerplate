@@ -1,10 +1,11 @@
 # Price action mean reversion backtesting
-import sys, os
+import sys, os, json
 
 from dash import Dash, html, dcc, Input, Output
 
 import build as graph
 import api.fetch as api
+from core.Account import Account
 
 app = Dash(
     __name__,
@@ -27,11 +28,29 @@ app.layout = html.Div(
     Input("interval", "n_intervals"),
 )
 def update_graph(n_intervals):
-    df = api.get_df_selected_tf("JMIA", "15m", "2024-12-01", "2024-12-20").iloc[:-1]
+    config = api.get_settings()
+
+    if config["mostRecent"] == False:
+        df, ticker = api.get_df_selected_tf(
+            config["ticker"], config["interval"], config["startDate"], config["endDate"]
+        )
+    else:
+        df, ticker = api.get_df_recent(
+            config["ticker"], config["interval"], config["timePeriod"]
+        )
+    df = df.iloc[:-1]
+
+    account = Account(config["initialBalance"], config["baseOrderValue"], [], 0, 0)
 
     try:
         return graph.build(
-            df, moving_avg=True, ma_period=50, rsi_period=14, add_csv=True
+            account,
+            df,
+            ticker,
+            moving_avg=config["movingAvg"],
+            ma_period=config["maPeriod"],
+            rsi_period=config["rsiPeriod"],
+            add_csv=config["addCsv"],
         )
     except Exception as e:
         exc_type, exc_obj, exc_tb = sys.exc_info()
