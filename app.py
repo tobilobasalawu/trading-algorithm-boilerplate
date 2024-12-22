@@ -70,4 +70,4 @@ def update_graph(n_intervals):
 
 
 def main():
-    app.run_server(debug=False)
+    app.run_server(debug=True)

@@ -1,4 +1,4 @@
-import json, os
+import json
 import yfinance as yf
 
 
@@ -20,8 +20,5 @@ def get_df_recent(ticker, _interval, _period):  # For the most recent timeframe
 
 # Get settings from config.json
 def get_settings():
-    current_directory = os.path.dirname(os.path.abspath(__file__))
-    config_path = os.path.join(current_directory, "config.json")
-
-    with open(config_path, "r") as settings:
+    with open("config.json", "r") as settings:
         return json.load(settings)
