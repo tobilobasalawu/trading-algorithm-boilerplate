@@ -78,9 +78,9 @@ def build(account, df, ticker):
         low=data.lows,
         close=data.closes,
         name="Price ($)",
-        increasing=dict(line=dict(color="#199e5c")),
+        increasing=dict(line=dict(color="#16a16e")),
         decreasing=dict(line=dict(color="#eb4034")),
-        increasing_fillcolor="#199e5c",
+        increasing_fillcolor="#16a16e",
         decreasing_fillcolor="#eb4034",
     )
 
