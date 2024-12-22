@@ -281,4 +281,4 @@ If you'd like to contribute to the project, follow these steps:
 
 ## Contact
 
-If anything is unclear or you'd like to contact me, please reach out at _jamie.wells@studentvault.co.uk_.
+If anything is unclear or you'd like to contact me, please create a new issue [here](https://github.com/JamieWells1/trading-indicator/issues/new).
