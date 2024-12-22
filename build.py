@@ -44,7 +44,7 @@ def init_data(account, df, moving_avg, ma_period, rsi_period):
     else:
         data_obj.closes = data_obj.closes.iloc[ma_period:, 1]
 
-    data_obj.entries, data_obj.exits = order.indicators(account, data_obj, rsi)
+    data_obj.entries, data_obj.exits = order.indicators(account, data_obj)
 
     profit_colour = "\033[0m"
     if account.profit > 0:
