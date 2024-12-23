@@ -52,7 +52,11 @@ Install your packages:
 pip install -r requirements.txt
 ```
 
-_If there are any ModuleNotFound errors after running this command, try installing the offending packages individually._
+_If there are any ModuleNotFound errors after running this command, try installing the offending packages individually by using the following:_
+
+```shell
+pip install offending-package
+```
 
 Run the server:
 
@@ -82,7 +86,11 @@ Install your packages:
 pip install -r requirements.txt
 ```
 
-_If there are any ModuleNotFound errors after running this command, try installing the offending packages individually._
+_If there are any ModuleNotFound errors after running this command, try installing the offending packages individually by using the following:_
+
+```shell
+pip install offending-package
+```
 
 Run the server:
 
@@ -136,7 +144,7 @@ In order to add **exits**, you will need to use these 3 lines of code:
 
 ```python
 exits = indicator.add(exits, "2024-12-01", 20) # "2024-12-01" = your datetime, 20 = closing price for a given candle
-account.buy_order(20) # 20 = closing price for a given candle
+account.sell_order(20) # 20 = closing price for a given candle
 log.append("SELL")
 ```
 
