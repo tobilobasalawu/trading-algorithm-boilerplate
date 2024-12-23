@@ -1,3 +1,4 @@
+# Convert OHLC pandas series to list for calculations
 def series_to_lists(data):
     datetimes = data.datetimes.to_list()
     opens = data.opens.to_list()

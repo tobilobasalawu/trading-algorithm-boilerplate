@@ -10,6 +10,7 @@ dash-html-components==2.0.0
 dash-table==5.0.0
 Flask==3.0.3
 frozendict==2.4.6
+gunicorn==23.0.0
 html5lib==1.1
 idna==3.10
 importlib_metadata==8.5.0
@@ -19,7 +20,7 @@ lxml==5.3.0
 MarkupSafe==3.0.2
 multitasking==0.0.11
 nest-asyncio==1.6.0
-numpy==2.2.0
+numpy==2.0.2
 packaging==24.2
 pandas==2.2.3
 peewee==3.17.8

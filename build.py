@@ -1,10 +1,12 @@
 import plotly.graph_objects as go
 import api.GraphData as api
-import utils.calcs as calcs
-import pandas as pd
+import api.fetch as fetch
+import core.order as order
+
+config = fetch.get_settings()
 
 
-def init_data(df, moving_avg=True, ma_period=20, rsi_period=14):
+def init_data(account, df, moving_avg, ma_period, rsi_period):
     datetimes = df.index.to_series()[ma_period:]
     closes = df.iloc[:, 0]
     highs = df.iloc[ma_period:, 1]
@@ -16,6 +18,7 @@ def init_data(df, moving_avg=True, ma_period=20, rsi_period=14):
     exits = []
 
     data_obj = api.GraphData(
+        account,
         datetimes,
         closes,
         highs,
@@ -31,7 +34,7 @@ def init_data(df, moving_avg=True, ma_period=20, rsi_period=14):
 
     rsi = data_obj.calc_rsi()
 
-    if moving_avg == True:
+    if config["movingAvg"]:
         data_obj.sma = (
             data_obj.calc_sma()
         )  # List of closing values, moving-average period length
@@ -41,16 +44,32 @@ def init_data(df, moving_avg=True, ma_period=20, rsi_period=14):
     else:
         data_obj.closes = data_obj.closes.iloc[ma_period:, 1]
 
-    data_obj.entries, data_obj.exits = calcs.indicators(data_obj, rsi)
+    data_obj.entries, data_obj.exits = order.indicators(account, data_obj)
+
+    profit_colour = "\033[0m"
+    if account.profit > 0:
+        profit_colour = "\033[32m"
+    elif account.profit < 0:
+        profit_colour = "\033[31m"
+    reset_colour = "\033[0m"
+
+    print(
+        "\n=====================================================================================\n"
+    )
+    print(
+        f"Made {len(account.orders) // 2} trades | Volume traded: ${account.volume:.2f} | {profit_colour}Return: {((account.profit / config['initialBalance']) * 100):.2f}%{reset_colour} | {profit_colour}Profit: ${account.profit:.2f}{reset_colour}\n"
+    )
 
     return data_obj
 
 
-def build(df, moving_avg=True, ma_period=20, rsi_period=14, add_csv=True):
+def build(account, df, ticker):
 
-    if add_csv == True:
+    if config["addCsv"] == True:
         df.to_csv("data.csv")
-    data = init_data(df, moving_avg, ma_period, rsi_period)
+    data = init_data(
+        account, df, config["movingAvg"], config["maPeriod"], config["rsiPeriod"]
+    )
 
     candlestick = go.Candlestick(
         x=data.datetimes,
@@ -58,10 +77,10 @@ def build(df, moving_avg=True, ma_period=20, rsi_period=14, add_csv=True):
         high=data.highs,
         low=data.lows,
         close=data.closes,
-        name="Price",
-        increasing=dict(line=dict(color="#199e5c")),
+        name="Price ($)",
+        increasing=dict(line=dict(color="#16a16e")),
         decreasing=dict(line=dict(color="#eb4034")),
-        increasing_fillcolor="#199e5c",
+        increasing_fillcolor="#16a16e",
         decreasing_fillcolor="#eb4034",
     )
 
@@ -70,7 +89,7 @@ def build(df, moving_avg=True, ma_period=20, rsi_period=14, add_csv=True):
         y=data.sma,
         mode="lines",
         name="SMA",
-        line=dict(color="white", width=1),
+        line=dict(color="orange", width=1),
     )
 
     fig = go.Figure(data=[candlestick, sma_line])
@@ -81,10 +100,10 @@ def build(df, moving_avg=True, ma_period=20, rsi_period=14, add_csv=True):
             y=data.entries,
             mode="markers",
             name="BUY",
-            marker_symbol="diamond-dot",
-            marker_size=10,
-            marker_line_width=1,
-            marker_line_color="#262626",
+            marker_symbol="arrow-up",
+            marker_size=15,
+            marker_line_width=2,
+            marker_line_color="#eee",
             marker_color="#0ac91d",
             hovertemplate="BUY: %{y}",
         )
@@ -96,22 +115,22 @@ def build(df, moving_avg=True, ma_period=20, rsi_period=14, add_csv=True):
             y=data.exits,
             mode="markers",
             name="SELL",
-            marker_symbol="diamond-dot",
-            marker_size=10,
-            marker_line_width=1,
-            marker_line_color="#262626",
+            marker_symbol="arrow-down",
+            marker_size=15,
+            marker_line_width=2,
+            marker_line_color="#eee",
             marker_color="#b0160e",
             hovertemplate="SELL: %{y}",
         )
     )
 
     fig.update_layout(
-        title="Candlestick Chart",
+        title=f"{ticker} US Equity",
         xaxis_title="Date",
-        yaxis_title="Price",
+        yaxis_title="Price ($)",
         xaxis_rangeslider_visible=False,
         template="plotly_dark",
-        xaxis=dict(type="category", tickmode="linear", dtick=ma_period),
+        xaxis=dict(type="category", tickmode="linear", dtick=config["maPeriod"]),
     )
 
     return fig

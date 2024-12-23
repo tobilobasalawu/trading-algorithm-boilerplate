@@ -1,0 +1,14 @@
+{
+  "ticker": "JMIA",
+  "mostRecent": true,
+  "interval": "5m",
+  "startDate": "2024-12-01",
+  "endDate": "2024-12-20",
+  "timePeriod": "5d",
+  "movingAvg": true,
+  "maPeriod": 50,
+  "rsiPeriod": 14,
+  "addCsv": false,
+  "initialBalance": 1000,
+  "baseOrderValue": 1000
+}

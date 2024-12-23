@@ -1,6 +1,10 @@
+# Graph data class, has all graph data and can perform certain calculations on the data
+
+
 class GraphData:
     def __init__(
         self,
+        account,
         datetimes,
         closes,
         highs,
@@ -13,6 +17,7 @@ class GraphData:
         entries,
         exits,
     ):
+        self.account = account
         self.datetimes = datetimes
         self.closes = closes
         self.highs = highs
