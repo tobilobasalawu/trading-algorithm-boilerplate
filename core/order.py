@@ -35,11 +35,11 @@ def indicators(account, data):
     ):  # iterate through the candles. It doesn't matter which value you use (rsi, datetimes, opens, closes, highs, lows) as all these lists are the same length.
         # One value from each of these lists makes up the data needed to render 1 candle.
 
-        if data.rsi[i] < 30 and log[-1] != "BUY":
+        if data.rsi[i] < 30:
             entries = indicator.add(entries, datetimes[i], closes[i])
             account.buy_order(config["baseOrderValue"], closes[i])
             log.append("BUY")
-        elif data.rsi[i] > 70 and log[-1] != "SELL" and "BUY" in log:
+        elif data.rsi[i] > 70 and log[-1] == "BUY":
             exits = indicator.add(exits, datetimes[i], closes[i])
             account.sell_order(closes[i])
             log.append("SELL")

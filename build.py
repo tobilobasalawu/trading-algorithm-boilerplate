@@ -2,11 +2,25 @@ import plotly.graph_objects as go
 import api.GraphData as api
 import api.fetch as fetch
 import core.order as order
+from core.Account import Account
 
 config = fetch.get_settings()
 
 
-def init_data(account, df, moving_avg, ma_period, rsi_period):
+def init_data():
+    if config["mostRecent"] == False:
+        df, ticker = fetch.get_df_selected_tf(
+            config["ticker"], config["interval"], config["startDate"], config["endDate"]
+        )
+    else:
+        df, ticker = fetch.get_df_recent(
+            config["ticker"], config["interval"], config["timePeriod"]
+        )
+    df = df.iloc[:-1]
+
+    ma_period = config["maPeriod"]
+    rsi_period = config["rsiPeriod"]
+
     datetimes = df.index.to_series()[ma_period:]
     closes = df.iloc[:, 0]
     highs = df.iloc[ma_period:, 1]
@@ -17,8 +31,22 @@ def init_data(account, df, moving_avg, ma_period, rsi_period):
     entries = []
     exits = []
 
+    account = Account(config["initialBalance"], [], 0, 0, 0)
+    # Create account object that will be used for your session
+
+    valid = account.check_balance()
+    if valid == False:
+        print(
+            "\nError: Base order value cannot be greater than starting amount. Please restart the server.\n"
+        )
+        quit()
+
+    if config["addCsv"] == True:
+        df.to_csv("data.csv")
+
     data_obj = api.GraphData(
         account,
+        ticker,
         datetimes,
         closes,
         highs,
@@ -57,19 +85,14 @@ def init_data(account, df, moving_avg, ma_period, rsi_period):
         "\n=====================================================================================\n"
     )
     print(
-        f"Made {len(account.orders) // 2} trades | Volume traded: ${account.volume:.2f} | {profit_colour}Return: {((account.profit / config['initialBalance']) * 100):.2f}%{reset_colour} | {profit_colour}Profit: ${account.profit:.2f}{reset_colour}\n"
+        f"Made {len(account.orders) // 2} trades | {profit_colour}Return: {((account.profit / config['initialBalance']) * 100):.2f}%{reset_colour} | {profit_colour}Profit: ${account.profit:.2f}{reset_colour}\n"
     )
 
     return data_obj
 
 
-def build(account, df, ticker):
-
-    if config["addCsv"] == True:
-        df.to_csv("data.csv")
-    data = init_data(
-        account, df, config["movingAvg"], config["maPeriod"], config["rsiPeriod"]
-    )
+def build():
+    data = init_data()
 
     candlestick = go.Candlestick(
         x=data.datetimes,
@@ -125,7 +148,7 @@ def build(account, df, ticker):
     )
 
     fig.update_layout(
-        title=f"{ticker} US Equity",
+        title=f"{data.ticker} US Equity",
         xaxis_title="Date",
         yaxis_title="Price ($)",
         xaxis_rangeslider_visible=False,

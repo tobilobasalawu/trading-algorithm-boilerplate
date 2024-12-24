@@ -5,49 +5,51 @@ config = api.get_settings()
 
 
 class Account:
-    def __init__(self, balance, base_order_value, orders, profit, volume):
+    def __init__(self, balance, orders, profit, open_position_amount, total_invested):
         self.balance = balance  # Initial balance
-        self.base_order_value = base_order_value  # percentage of total balance
         # e.g. 10 = minimum of 10% of account balance put into each trade
         self.orders = (
             orders  # List of dicts: order amount, buy/sell price, units bought
         )
         self.profit = profit
-        self.volume = volume
+        self.open_position_amount = open_position_amount
+        self.total_invested = total_invested
 
     def buy_order(self, order_value, stock_price):  # Place a buy order
         order = {
             "type": "BUY",
             "amount": order_value,
             "price": stock_price,
-            "units": order_value / stock_price,
         }
+
         self.balance -= order["amount"]
-        self.volume += order["amount"]
+        self.total_invested += order["amount"]
+        try:
+            self.open_position_amount = (
+                self.open_position_amount * (stock_price / self.orders[-1]["price"])
+            ) + order["amount"]
+        except:
+            self.open_position_amount += order["amount"]
+
         self.orders.append(order)
 
-        """
-        print(
-            "\n=====================================================================================\n"
-        )
-        print(
-            f"Bought ${order_value:.2f} of {config["ticker"]} at ${stock_price:.2f} per unit.\n"
-        )
-        """
-
     def sell_order(self, stock_price):  # Place a sell order
-        units = self.orders[-1]["units"]
-        return_sum = stock_price * units
+        return_sum = self.open_position_amount * (
+            stock_price / self.orders[-1]["price"]
+        )
 
         order = {
             "type": "SELL",
             "amount": return_sum,
             "price": stock_price,
-            "units": units,
         }
+
         self.balance += return_sum
-        profit = return_sum - self.orders[-1]["amount"]
-        self.profit += profit
+        self.profit += return_sum - self.total_invested
+        self.total_invested = 0
+        self.open_position_amount = 0
+
+        self.orders.append(order)
 
         """
         print(
@@ -57,8 +59,6 @@ class Account:
             f"Return: {((profit / self.orders[-1]["amount"]) * 100):.2f}% | Profit: ${profit:.2f}\n\nNew balance: ${self.balance}\n"
         )
         """
-
-        self.orders.append(order)
 
     def check_balance(self):  # Does an initial balance check
         if config["initialBalance"] < config["baseOrderValue"]:

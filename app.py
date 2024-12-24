@@ -5,8 +5,6 @@ import sys, os, json
 from dash import Dash, html, dcc, Input, Output
 
 import build as graph
-import api.fetch as api
-from core.Account import Account
 
 
 app = Dash(
@@ -34,30 +32,9 @@ app.layout = html.Div(
 )
 # update_graph() will run every time the app is updated. App will automatically update when you save your code.
 def update_graph(n_intervals):
-    config = api.get_settings()
-
-    if config["mostRecent"] == False:
-        df, ticker = api.get_df_selected_tf(
-            config["ticker"], config["interval"], config["startDate"], config["endDate"]
-        )
-    else:
-        df, ticker = api.get_df_recent(
-            config["ticker"], config["interval"], config["timePeriod"]
-        )
-    df = df.iloc[:-1]
-
-    account = Account(config["initialBalance"], config["baseOrderValue"], [], 0, 0)
-    # Create account object that will be used for your session
-
-    valid = account.check_balance()
-    if valid == False:
-        print(
-            "\nError: Base order value cannot be greater than starting amount. Please restart the server.\n"
-        )
-        quit()
 
     try:
-        return graph.build(account, df, ticker)
+        return graph.build()
         # Build the graph and fetch all data required
 
     except Exception as e:

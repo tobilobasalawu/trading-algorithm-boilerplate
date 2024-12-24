@@ -3,12 +3,18 @@
   "mostRecent": true,
   "interval": "5m",
   "startDate": "2024-12-01",
-  "endDate": "2024-12-20",
+  "endDate": "2016-12-01",
   "timePeriod": "5d",
   "movingAvg": true,
   "maPeriod": 50,
   "rsiPeriod": 14,
+  "stdDevPeriod": 20,
   "addCsv": false,
   "initialBalance": 1000,
-  "baseOrderValue": 1000
+  "baseOrderValue": 100,
+  "maxOrderValue": 500,
+  "advanced": {
+    "test": "hello",
+    "test2": "world"
+  }
 }

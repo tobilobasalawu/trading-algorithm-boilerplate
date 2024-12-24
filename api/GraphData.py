@@ -5,6 +5,7 @@ class GraphData:
     def __init__(
         self,
         account,
+        ticker,
         datetimes,
         closes,
         highs,
@@ -18,6 +19,7 @@ class GraphData:
         exits,
     ):
         self.account = account
+        self.ticker = ticker
         self.datetimes = datetimes
         self.closes = closes
         self.highs = highs
