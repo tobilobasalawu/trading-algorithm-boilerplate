@@ -84,3 +84,11 @@ def random_colour():
     for i in range(6):
         color += letters[random.randint(0, 15)]
     return color
+
+
+def generate_number(digits):
+    number = ""
+    for i in range(digits):
+        digit = str(random.randint(0, 9))
+        number += digit
+    return number

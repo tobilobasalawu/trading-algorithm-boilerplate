@@ -1,7 +1,7 @@
 import api.GraphData as api
 import api.fetch as fetch
 import core.order as order
-import json, os
+import utils.variables as utils
 
 
 def init_graph_data(account):
@@ -15,8 +15,6 @@ def init_graph_data(account):
         df, ticker = fetch.get_df_recent(
             config["ticker"], config["interval"], config["timePeriod"]
         )
-
-    df = df.iloc[:-1]
 
     ma_period = config["maPeriod"]
     rsi_period = config["rsiPeriod"]
@@ -66,10 +64,10 @@ def init_graph_data(account):
     data_obj.calc_std_dev()
 
     datetimes = df.index.to_series()[cutoff_period:]
-    closes = df.iloc[cutoff_period:, 0]
-    highs = df.iloc[cutoff_period:, 1]
-    lows = df.iloc[cutoff_period:, 2]
-    opens = df.iloc[cutoff_period:, 3]
+    data_obj.closes = df.iloc[:, 0][cutoff_period:]
+    data_obj.highs = df.iloc[:, 1][cutoff_period:]
+    data_obj.lows = df.iloc[:, 2][cutoff_period:]
+    data_obj.opens = df.iloc[:, 3][cutoff_period:]
 
     valid = account.check_balance()
     if valid == False:
@@ -79,9 +77,23 @@ def init_graph_data(account):
         quit()
 
     if config["addCsv"] == True:
-        df.to_csv("data.csv")
+        number = utils.generate_number(4)
+        df.to_csv(f"{data_obj.ticker}_{number}.csv")
 
     data_obj.entries, data_obj.exits = order.indicators(account, data_obj)
+
+    account.win_rate = (
+        ((account.profitable_trades / account.completed_trades) * 100)
+        if account.completed_trades > 0
+        else -1
+    )
+
+    perc = ""
+    if account.win_rate == -1:
+        win_rate = "N/A"
+    else:
+        win_rate = round(account.win_rate, 2)
+        perc = "%"
 
     profit_colour = "\033[0m"
     if account.profit > 0:
@@ -94,7 +106,7 @@ def init_graph_data(account):
         "\n=====================================================================================\n"
     )
     print(
-        f"Made {(account.completed_trades)} trades | Win rate: {((account.profitable_trades / account.completed_trades) * 100):.2f}% | {profit_colour}Return: {(((account.balance_absolute / config['initialBalance']) - 1) * 100):.2f}%{reset_colour} | {profit_colour}Profit: ${account.profit:.2f}{reset_colour}\n"
+        f"Made {(account.completed_trades)} trades | Win rate: {win_rate}{perc} | {profit_colour}Return: {(((account.balance_absolute / config['initialBalance']) - 1) * 100):.2f}%{reset_colour} | {profit_colour}Profit: ${account.profit:.2f}{reset_colour}\n"
     )
 
     return data_obj

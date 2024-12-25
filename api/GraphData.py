@@ -47,7 +47,7 @@ class GraphData:
     def calc_sma(self):
         self.sma = []
         closes = self.closes.to_list()
-        for i in range(self.ma_period, len(closes) + 1):
+        for i in range(self.ma_period, len(closes)):
             window = closes[i - self.ma_period : i]
             self.sma.append(sum(window) / self.ma_period)
         return self.sma
