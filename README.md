@@ -53,12 +53,7 @@ pip install -r requirements.txt
 
 ### 5. Configure Settings
 
-Open config.json and set your preferences:
-
-- `ticker`: placeholder
-- `simulate`: placeholder
-
-Example:
+Open config.json and set your preferences. For example:
 
 ```json
 {
@@ -70,6 +65,8 @@ Example:
   "initialBalance": 10000
 }
 ```
+
+There are some more advanced settings that you can set if you wish for further customisation.
 
 ### 5. Run the Application:
 
@@ -92,15 +89,65 @@ Visit [http://127.0.0.1:8050/](http://127.0.0.1:8050/) in your browser to see th
 
 ### Configurable Settings
 
+Below is a comprehensive list of all configurable settings available in `config.json`:
+
+- **General**:
+
+  - `ticker`: The stock ticker to load data for (e.g., `"AAPL"` for Apple).
+  - `simulate`: Boolean (`true`/`false`) to enable or disable simulations.
+  - `mostRecent`: Boolean (`true`/`false`) to specify whether the app uses the most recent data or a custom date range.
+  - `interval`: Time interval between each candle (e.g., `"1d"`, `"1h"`, `"5m"`).
+  - `timePeriod`: Specifies the time period for analysis when `mostRecent` is `true` (e.g., `"5d"`).
+  - `startDate`: Start date for data when `mostRecent` is `false` (format: `"YYYY-MM-DD"`).
+  - `endDate`: End date for data when `mostRecent` is `false` (format: `"YYYY-MM-DD"`).
+  - `addCsv`: Boolean (`true`/`false`) to determine whether chart data should be exported to a CSV file.
+
 - **Indicators**:
-  - `maPeriod`: Period for SMA calculation.
-  - `rsiPeriod`: Period for RSI calculation.
+
+  - `maPeriod`: Number of candles used to calculate the Simple Moving Average (SMA).
+  - `rsiPeriod`: Number of candles used to calculate the Relative Strength Index (RSI).
+  - `atrPeriod`: Number of candles used to calculate the Average True Range (ATR).
+  - `stdDevPeriod`: Number of candles used to calculate the Standard Deviation.
+
 - **Simulations**:
-  - `simulations`: Number of iterations to test.
-  - `topResultsPercentile`: Filter top-performing simulations.
+  - `simulations`: Number of Monte Carlo simulations to run for parameter optimization.
+  - `simBestBacktests`: Boolean (`true`/`false`) to enable or disable using the best backtest results for further simulations.
+  - `topResultsPercentile`: Percentile of top-performing simulations to save (e.g., `90` for top 10%).
 - **Backtesting**:
-  - `initialBalance`: Starting balance for the account.
-  - `baseOrderValue`: Minimum amount for trades.
+  - `initialBalance`: Starting balance of the trading account.
+  - `baseOrderValue`: Minimum amount allocated for a single trade.
+  - `maxOrderValue`: Maximum allowable value for a single trade.
+  - `maxConcurrentPositions`: Maximum number of open positions allowed simultaneously.
+  - `buyMultiplier`: Multiplier applied to entry capital for calculating trade size.
+  - `bandMultiplier`: Number of standard deviations used for mean reversion triggers.
+
+### Example `config.json`
+
+```json
+{
+  "ticker": "AAPL",
+  "simulate": true,
+  "simulations": 50,
+  "simBestBacktests": false,
+  "topResultsPercentile": 90,
+  "mostRecent": false,
+  "interval": "1d",
+  "timePeriod": "5d",
+  "startDate": "2020-12-01",
+  "endDate": "2024-12-01",
+  "maPeriod": 20,
+  "rsiPeriod": 14,
+  "atrPeriod": 14,
+  "stdDevPeriod": 14,
+  "addCsv": false,
+  "initialBalance": 10000,
+  "baseOrderValue": 1000,
+  "maxOrderValue": 5000,
+  "maxConcurrentPositions": 3,
+  "buyMultiplier": 1.5,
+  "bandMultiplier": 2
+}
+```
 
 ---
 
