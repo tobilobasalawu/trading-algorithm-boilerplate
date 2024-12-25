@@ -125,27 +125,27 @@ Below is a comprehensive list of all configurable settings available in `config.
 
 ```json
 {
-  "ticker": "AAPL",
-  "simulate": true,
-  "simulations": 50,
+  "ticker": "MSFT",
+  "simulate": false,
+  "simulations": 10,
   "simBestBacktests": false,
   "topResultsPercentile": 90,
-  "mostRecent": false,
+  "mostRecent": true,
   "interval": "1d",
-  "timePeriod": "5d",
+  "timePeriod": "1y",
   "startDate": "2020-12-01",
   "endDate": "2024-12-01",
-  "maPeriod": 20,
-  "rsiPeriod": 14,
-  "atrPeriod": 14,
-  "stdDevPeriod": 14,
-  "addCsv": false,
+  "maPeriod": 50,
+  "rsiPeriod": 7,
+  "atrPeriod": 20,
+  "stdDevPeriod": 20,
+  "addCsv": true,
   "initialBalance": 10000,
   "baseOrderValue": 1000,
   "maxOrderValue": 5000,
-  "maxConcurrentPositions": 3,
-  "buyMultiplier": 1.5,
-  "bandMultiplier": 2
+  "maxConcurrentPositions": 4,
+  "buyMultiplier": 1.2,
+  "bandMultiplier": 1.5
 }
 ```
 
