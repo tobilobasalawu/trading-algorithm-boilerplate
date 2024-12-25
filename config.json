@@ -1,7 +1,7 @@
 {
   "ticker": "AAPL",
   "simulate": true,
-  "simulations": 100,
+  "simulations": 10,
   "simBestBacktests": false,
   "topResultsPercentile": 90,
   "mostRecent": false,
@@ -9,15 +9,15 @@
   "timePeriod": "5d",
   "startDate": "2020-12-01",
   "endDate": "2024-12-01",
-  "maPeriod": 24,
-  "rsiPeriod": 19,
-  "atrPeriod": 7,
-  "stdDevPeriod": 10,
+  "maPeriod": 22,
+  "rsiPeriod": 7,
+  "atrPeriod": 9,
+  "stdDevPeriod": 20,
   "addCsv": false,
   "initialBalance": 10000,
   "baseOrderValue": 1000,
-  "maxOrderValue": 2261,
-  "maxConcurrentPositions": 10,
-  "buyMultiplier": 2.4990555307849647,
-  "bandMultiplier": 1.113349433801437
+  "maxOrderValue": 7822,
+  "maxConcurrentPositions": 4,
+  "buyMultiplier": 1.4749038926961493,
+  "bandMultiplier": 1.2564161999629597
 }

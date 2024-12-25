@@ -220,7 +220,7 @@ def simulate():
         ongoing_balances.append(data.ongoing_balance)
 
         chart_lines.append(line)
-        print(f"Finished simulation {(i + 1)}")
+        print(f"Finished simulation {(i + 1)}/{iterations}")
 
     max_ma_period = 0
     max_rsi_period = 0

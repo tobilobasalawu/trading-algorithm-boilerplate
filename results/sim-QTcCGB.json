@@ -1,0 +1,53 @@
+[
+  {
+    "unique_id": "LpYquV",
+    "ticker": "AAPL",
+    "sim_period": 1006,
+    "total_investment": 10000,
+    "final_amount": 13867.77,
+    "total_return": 38.68,
+    "win_rate": 45.45,
+    "ma_period": 47,
+    "rsi_period": 11,
+    "atr_period": 20,
+    "std_dev_period": 9,
+    "max_order_value": 3052,
+    "max_concurrent_positions": 10,
+    "buy_multiplier": 2.24,
+    "band_multiplier": 1.46
+  },
+  {
+    "unique_id": "aRvYGO",
+    "ticker": "AAPL",
+    "sim_period": 1006,
+    "total_investment": 10000,
+    "final_amount": 13712.04,
+    "total_return": 37.12,
+    "win_rate": 57.69,
+    "ma_period": 47,
+    "rsi_period": 7,
+    "atr_period": 12,
+    "std_dev_period": 17,
+    "max_order_value": 2082,
+    "max_concurrent_positions": 8,
+    "buy_multiplier": 1.93,
+    "band_multiplier": 1.85
+  },
+  {
+    "unique_id": "AZAWOl",
+    "ticker": "AAPL",
+    "sim_period": 1006,
+    "total_investment": 10000,
+    "final_amount": 14387.25,
+    "total_return": 43.87,
+    "win_rate": 45.45,
+    "ma_period": 48,
+    "rsi_period": 11,
+    "atr_period": 11,
+    "std_dev_period": 12,
+    "max_order_value": 4693,
+    "max_concurrent_positions": 7,
+    "buy_multiplier": 1.47,
+    "band_multiplier": 1.81
+  }
+]
