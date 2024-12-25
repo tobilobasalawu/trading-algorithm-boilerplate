@@ -96,11 +96,11 @@ Below is a comprehensive list of all configurable settings available in `config.
   - `ticker`: The stock ticker to load data for (e.g., `"AAPL"` for Apple).
   - `simulate`: Boolean (`true`/`false`) to enable or disable simulations.
   - `mostRecent`: Boolean (`true`/`false`) to specify whether the app uses the most recent data or a custom date range.
-  - `interval`: Time interval between each candle (e.g., `"1d"`, `"1h"`, `"5m"`).
+  - `interval`: Time interval between each candle (e.g., `"1d"`, `"60m"`, `"5m"`).
   - `timePeriod`: Specifies the time period for analysis when `mostRecent` is `true` (e.g., `"5d"`).
   - `startDate`: Start date for data when `mostRecent` is `false` (format: `"YYYY-MM-DD"`).
   - `endDate`: End date for data when `mostRecent` is `false` (format: `"YYYY-MM-DD"`).
-  - `addCsv`: Boolean (`true`/`false`) to determine whether chart data should be exported to a CSV file.
+  - `addCsv`: Boolean (`true`/`false`) to determine whether the candlestick chart data should be exported to a CSV file.
 
 - **Indicators**:
 
