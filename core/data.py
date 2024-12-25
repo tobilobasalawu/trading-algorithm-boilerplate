@@ -1,0 +1,173 @@
+import api.GraphData as api
+import api.fetch as fetch
+import core.order as order
+
+
+def init_graph_data(account):
+    config = fetch.get_settings()
+
+    if config["mostRecent"] == False:
+        df, ticker = fetch.get_df_selected_tf(
+            config["ticker"], config["interval"], config["startDate"], config["endDate"]
+        )
+    else:
+        df, ticker = fetch.get_df_recent(
+            config["ticker"], config["interval"], config["timePeriod"]
+        )
+
+    df = df.iloc[:-1]
+
+    ma_period = config["maPeriod"]
+    rsi_period = config["rsiPeriod"]
+    atr_period = config["atrPeriod"]
+    std_dev_period = config["stdDevPeriod"]
+
+    cutoff_period = max(ma_period, rsi_period, atr_period, std_dev_period)
+
+    datetimes = df.index.to_series()
+    closes = df.iloc[:, 0]
+    highs = df.iloc[:, 1]
+    lows = df.iloc[:, 2]
+    opens = df.iloc[:, 3]
+    rsi = []
+    sma = []
+    atr = []
+    std_dev = []
+    entries = []
+    exits = []
+    ongoing_balance = []
+
+    data_obj = api.GraphData(
+        account,
+        ticker,
+        datetimes,
+        closes,
+        highs,
+        lows,
+        opens,
+        ma_period,
+        rsi_period,
+        atr_period,
+        std_dev_period,
+        cutoff_period,
+        sma,
+        rsi,
+        atr,
+        std_dev,
+        entries,
+        exits,
+        ongoing_balance,
+    )
+
+    data_obj.calc_rsi()
+    data_obj.calc_atr()
+    data_obj.calc_sma()
+    data_obj.calc_std_dev()
+
+    datetimes = df.index.to_series()[cutoff_period:]
+    closes = df.iloc[cutoff_period:, 0]
+    highs = df.iloc[cutoff_period:, 1]
+    lows = df.iloc[cutoff_period:, 2]
+    opens = df.iloc[cutoff_period:, 3]
+
+    valid = account.check_balance()
+    if valid == False:
+        print(
+            "\nError: Base order value cannot be greater than starting amount. Please restart the server.\n"
+        )
+        quit()
+
+    if config["addCsv"] == True:
+        df.to_csv("data.csv")
+
+    data_obj.entries, data_obj.exits = order.indicators(account, data_obj)
+
+    profit_colour = "\033[0m"
+    if account.profit > 0:
+        profit_colour = "\033[32m"
+    elif account.profit < 0:
+        profit_colour = "\033[31m"
+    reset_colour = "\033[0m"
+
+    print(
+        "\n=====================================================================================\n"
+    )
+    print(
+        f"Made {(account.completed_trades)} trades | {profit_colour}Return: {(((account.balance_absolute / config['initialBalance']) - 1) * 100):.2f}%{reset_colour} | {profit_colour}Profit: ${account.profit:.2f}{reset_colour}\n"
+    )
+
+    return data_obj
+
+
+def init_sim_data(account):
+    config = fetch.get_settings()
+
+    df, ticker = fetch.get_df_selected_tf(
+        config["ticker"], config["interval"], config["startDate"], config["endDate"]
+    )
+
+    ma_period = config["maPeriod"]
+    rsi_period = config["rsiPeriod"]
+    atr_period = config["atrPeriod"]
+    std_dev_period = config["stdDevPeriod"]
+
+    cutoff_period = max(ma_period, rsi_period, atr_period, std_dev_period)
+
+    datetimes = df.index.to_series()
+    closes = df.iloc[:, 0]
+    highs = df.iloc[:, 1]
+    lows = df.iloc[:, 2]
+    opens = df.iloc[:, 3]
+    rsi = []
+    sma = []
+    atr = []
+    std_dev = []
+    entries = []
+    exits = []
+    ongoing_balance = []
+
+    data_obj = api.GraphData(
+        account,
+        ticker,
+        datetimes,
+        closes,
+        highs,
+        lows,
+        opens,
+        ma_period,
+        rsi_period,
+        atr_period,
+        std_dev_period,
+        cutoff_period,
+        sma,
+        rsi,
+        atr,
+        std_dev,
+        entries,
+        exits,
+        ongoing_balance,
+    )
+
+    data_obj.calc_rsi()
+    data_obj.calc_atr()
+    data_obj.calc_sma()
+    data_obj.calc_std_dev()
+
+    datetimes = df.index.to_series()[cutoff_period:]
+    closes = df.iloc[cutoff_period:, 0]
+    highs = df.iloc[cutoff_period:, 1]
+    lows = df.iloc[cutoff_period:, 2]
+    opens = df.iloc[cutoff_period:, 3]
+
+    data_obj.entries, data_obj.exits = order.indicators(account, data_obj)
+
+    account.profit = account.balance_absolute - config["initialBalance"]
+
+    valid = account.check_balance()
+    if valid == False:
+        print(
+            "\nError: Base order value cannot be greater than starting amount. Please restart the server.\n"
+        )
+        quit()
+
+    return data_obj

@@ -1,20 +1,21 @@
 {
-  "ticker": "JMIA",
-  "mostRecent": true,
-  "interval": "5m",
-  "startDate": "2024-12-01",
-  "endDate": "2016-12-01",
+  "ticker": "AAPL",
+  "simulate": true,
+  "simulations": 10,
+  "mostRecent": false,
+  "interval": "1d",
   "timePeriod": "5d",
-  "movingAvg": true,
-  "maPeriod": 50,
-  "rsiPeriod": 14,
-  "stdDevPeriod": 20,
+  "startDate": "2016-12-01",
+  "endDate": "2024-12-01",
+  "maPeriod": 27,
+  "rsiPeriod": 7,
+  "atrPeriod": 14,
+  "stdDevPeriod": 18,
   "addCsv": false,
-  "initialBalance": 1000,
-  "baseOrderValue": 100,
-  "maxOrderValue": 500,
-  "advanced": {
-    "test": "hello",
-    "test2": "world"
-  }
+  "initialBalance": 10000,
+  "baseOrderValue": 1000,
+  "maxOrderValue": 4797,
+  "maxConcurrentPositions": 10,
+  "buyMultiplier": 2.5518200891006186,
+  "bandMultiplier": 1.052115054921067
 }

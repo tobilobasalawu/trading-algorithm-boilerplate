@@ -266,9 +266,9 @@ See above for how to start adding indicators in this file.
 
 **Leverage**: Add leverage to a buy order.
 
-**Accumulate short positions**: Open short positions.
-
 **Comprehensive dashboard UI**: Check your trades in a dashboard.
+
+**Simulations**: Measure how your algorithm performs when run through rigourous simulations.
 
 **Create an account**: Keep track of all your past and present trades to see how your model performs over time.
 

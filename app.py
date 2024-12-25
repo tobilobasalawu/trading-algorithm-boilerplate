@@ -5,7 +5,9 @@ import sys, os, json
 from dash import Dash, html, dcc, Input, Output
 
 import build as graph
+import api.fetch as api
 
+config = api.get_settings()
 
 app = Dash(
     __name__,
@@ -33,17 +35,28 @@ app.layout = html.Div(
 # update_graph() will run every time the app is updated. App will automatically update when you save your code.
 def update_graph(n_intervals):
 
-    try:
-        return graph.build()
-        # Build the graph and fetch all data required
+    if config["simulate"] == True:
+        try:
+            return graph.simulate()
 
-    except Exception as e:
-        exc_type, exc_obj, exc_tb = sys.exc_info()
-        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
 
-        print(f"\nGraph failed to load: {e} => {fname, exc_tb.tb_lineno}\n")
-    if not Exception:
-        print("\n<========== Graph updated successfully ==========>\n")
+            print(f"\nGraph failed to load: {e} => {fname, exc_tb.tb_lineno}\n")
+        if not Exception:
+            print("\n<========== Graph updated successfully ==========>\n")
+    else:
+        try:
+            return graph.build()
+
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+
+            print(f"\nGraph failed to load: {e} => {fname, exc_tb.tb_lineno}\n")
+        if not Exception:
+            print("\n<========== Graph updated successfully ==========>\n")
 
 
 def main():

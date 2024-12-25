@@ -1,98 +1,29 @@
 import plotly.graph_objects as go
-import api.GraphData as api
 import api.fetch as fetch
-import core.order as order
+import core
+import core.data
 from core.Account import Account
-
-config = fetch.get_settings()
-
-
-def init_data():
-    if config["mostRecent"] == False:
-        df, ticker = fetch.get_df_selected_tf(
-            config["ticker"], config["interval"], config["startDate"], config["endDate"]
-        )
-    else:
-        df, ticker = fetch.get_df_recent(
-            config["ticker"], config["interval"], config["timePeriod"]
-        )
-    df = df.iloc[:-1]
-
-    ma_period = config["maPeriod"]
-    rsi_period = config["rsiPeriod"]
-
-    datetimes = df.index.to_series()[ma_period:]
-    closes = df.iloc[:, 0]
-    highs = df.iloc[ma_period:, 1]
-    lows = df.iloc[ma_period:, 2]
-    opens = df.iloc[ma_period:, 3]
-    rsi = []
-    sma = []
-    entries = []
-    exits = []
-
-    account = Account(config["initialBalance"], [], 0, 0, 0)
-    # Create account object that will be used for your session
-
-    valid = account.check_balance()
-    if valid == False:
-        print(
-            "\nError: Base order value cannot be greater than starting amount. Please restart the server.\n"
-        )
-        quit()
-
-    if config["addCsv"] == True:
-        df.to_csv("data.csv")
-
-    data_obj = api.GraphData(
-        account,
-        ticker,
-        datetimes,
-        closes,
-        highs,
-        lows,
-        opens,
-        ma_period,
-        rsi_period,
-        sma,
-        rsi,
-        entries,
-        exits,
-    )
-
-    rsi = data_obj.calc_rsi()
-
-    if config["movingAvg"]:
-        data_obj.sma = (
-            data_obj.calc_sma()
-        )  # List of closing values, moving-average period length
-        data_obj.closes = data_obj.closes.iloc[
-            ma_period:
-        ]  # Remove excess closing values
-    else:
-        data_obj.closes = data_obj.closes.iloc[ma_period:, 1]
-
-    data_obj.entries, data_obj.exits = order.indicators(account, data_obj)
-
-    profit_colour = "\033[0m"
-    if account.profit > 0:
-        profit_colour = "\033[32m"
-    elif account.profit < 0:
-        profit_colour = "\033[31m"
-    reset_colour = "\033[0m"
-
-    print(
-        "\n=====================================================================================\n"
-    )
-    print(
-        f"Made {len(account.orders) // 2} trades | {profit_colour}Return: {((account.profit / config['initialBalance']) * 100):.2f}%{reset_colour} | {profit_colour}Profit: ${account.profit:.2f}{reset_colour}\n"
-    )
-
-    return data_obj
+from core.Backtest import Backtest
+import utils.variables
 
 
 def build():
-    data = init_data()
+    config = fetch.get_settings()
+
+    account = Account(
+        uninvested_balance=config["initialBalance"],
+        balance_absolute=config["initialBalance"],
+        orders=[],
+        profit=0,
+        open_position_amount=0,
+        total_invested=0,
+        shares_owned=0,
+        win_rate=0,
+        completed_trades=0,
+        profitable_trades=0,
+    )
+
+    data = core.data.init_graph_data(account)
 
     candlestick = go.Candlestick(
         x=data.datetimes,
@@ -154,6 +85,128 @@ def build():
         xaxis_rangeslider_visible=False,
         template="plotly_dark",
         xaxis=dict(type="category", tickmode="linear", dtick=config["maPeriod"]),
+    )
+
+    return fig
+
+
+def simulate():
+    print("Working...\n")
+
+    ongoing_balances = []
+
+    chart_lines = []
+    all_backtests = []
+    config = fetch.get_settings()
+
+    for i in range(config["simulations"]):
+
+        account = Account(
+            uninvested_balance=config["initialBalance"],
+            balance_absolute=config["initialBalance"],
+            orders=[],
+            profit=0,
+            open_position_amount=0,
+            total_invested=0,
+            shares_owned=0,
+            win_rate=0,
+            completed_trades=0,
+            profitable_trades=0,
+        )
+
+        utils.variables.randomise()
+        config = fetch.get_settings()
+
+        data = core.data.init_sim_data(account)
+
+        win_rate = (
+            ((account.profitable_trades / account.completed_trades) * 100)
+            if account.completed_trades > 0
+            else -1
+        )
+        account.win_rate = win_rate
+
+        backtest_result = Backtest(
+            unique_id=utils.variables.generate_uid(6),
+            ticker=config["ticker"],
+            sim_period=len(data.closes),
+            total_investment=config["initialBalance"],
+            final_amount=round(account.balance_absolute, 2),
+            total_return=round(
+                (
+                    (account.balance_absolute - config["initialBalance"])
+                    / config["initialBalance"]
+                    * 100
+                ),
+                2,
+            ),
+            win_rate=round(win_rate, 2),
+            ma_period=config["maPeriod"],
+            rsi_period=config["rsiPeriod"],
+            atr_period=config["atrPeriod"],
+            std_dev_period=config["stdDevPeriod"],
+            max_order_value=config["maxOrderValue"],
+            max_concurrent_positions=config["maxConcurrentPositions"],
+            buy_multiplier=round(config["buyMultiplier"], 2),
+            band_multiplier=round(config["bandMultiplier"], 2),
+        )
+
+        line = go.Scatter(
+            x=data.datetimes,
+            y=data.ongoing_balance,
+            mode="lines",
+            name="Balance",
+            line=dict(color=utils.variables.random_colour(), width=1),
+            hovertemplate=f"Sim {backtest_result.unique_id}. Final balance: {backtest_result.final_amount}",
+        )
+
+        all_backtests.append(backtest_result)
+        ongoing_balances.append(data.ongoing_balance)
+
+        chart_lines.append(line)
+        print(f"Finished simulation {(i + 1)}")
+
+    max_ma_period = 0
+    max_rsi_period = 0
+    max_atr_period = 0
+    max_std_dev_period = 0
+
+    for result in all_backtests:
+        max_ma_period = max(max_ma_period, result.ma_period)
+        max_rsi_period = max(max_rsi_period, result.rsi_period)
+        max_atr_period = max(max_atr_period, result.atr_period)
+        max_std_dev_period = max(max_std_dev_period, result.std_dev_period)
+
+    max_period_length = max(
+        max_ma_period, max_rsi_period, max_atr_period, max_std_dev_period
+    )
+    shortest_line_length = len(data.closes) - max_period_length
+
+    ongoing_balances = [balance[:shortest_line_length] for balance in ongoing_balances]
+
+    for i in range(len(chart_lines)):
+        chart_lines[i]["y"] = ongoing_balances[i]
+
+    utils.variables.write_to_json(all_backtests)
+    print(
+        "\nSimutions complete.\n\n==============================================================================="
+    )
+
+    fig = go.Figure(data=chart_lines)
+
+    fig.update_layout(
+        title=f"{data.ticker} US Equity",
+        xaxis_title="Date",
+        yaxis_title="Balance",
+        xaxis_rangeslider_visible=False,
+        template="plotly_dark",
+        xaxis=dict(
+            type="category",
+            tickmode="linear",
+            dtick=config["maPeriod"],
+            gridcolor="#262626",
+        ),
+        yaxis=dict(gridcolor="#262626"),
     )
 
     return fig

@@ -30,21 +30,27 @@ def indicators(account, data):
 
     # <==================== Add your custom indicator logic below ====================>
 
-    for i in range(
-        len(data.rsi)
-    ):  # iterate through the candles. It doesn't matter which value you use (rsi, datetimes, opens, closes, highs, lows) as all these lists are the same length.
+    for i in range(len(data.closes) - data.max_period):
+        # iterate through the candles. It doesn't matter which value you use (rsi, datetimes, opens, closes, highs, lows) as all these lists are the same length.
         # One value from each of these lists makes up the data needed to render 1 candle.
 
         if data.rsi[i] < 30:
             entries = indicator.add(entries, datetimes[i], closes[i])
-            account.buy_order(config["baseOrderValue"], closes[i])
+            account.buy_order(datetimes[i], config["baseOrderValue"], closes[i])
             log.append("BUY")
         elif data.rsi[i] > 70 and log[-1] == "BUY":
             exits = indicator.add(exits, datetimes[i], closes[i])
-            account.sell_order(closes[i])
+            account.sell_order(datetimes[i], closes[i])
             log.append("SELL")
-        else:
-            continue
+
+        account.open_position_amount = account.shares_owned * closes[i]
+        account.balance_absolute = (
+            account.uninvested_balance + account.open_position_amount
+        )
+        account.profit = account.balance_absolute - config["initialBalance"]
+
+        data.ongoing_balance.append(account.balance_absolute)
+
         # Adds a buy/sell signal if the RSI drops below/reaches a certain value
 
     # <==================== Add your custom indicator logic above ====================>
