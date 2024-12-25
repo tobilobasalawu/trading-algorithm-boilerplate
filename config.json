@@ -1,7 +1,7 @@
 {
   "ticker": "MSFT",
   "simulate": false,
-  "simulations": 10,
+  "simulations": 100,
   "simBestBacktests": false,
   "topResultsPercentile": 90,
   "mostRecent": true,
@@ -10,14 +10,14 @@
   "startDate": "2020-12-01",
   "endDate": "2024-12-01",
   "maPeriod": 50,
-  "rsiPeriod": 7,
+  "rsiPeriod": 14,
   "atrPeriod": 20,
   "stdDevPeriod": 20,
-  "addCsv": true,
+  "addCsv": false,
   "initialBalance": 10000,
   "baseOrderValue": 1000,
-  "maxOrderValue": 5000,
-  "maxConcurrentPositions": 4,
-  "buyMultiplier": 1.2,
-  "bandMultiplier": 1.5
+  "maxOrderValue": 4799,
+  "maxConcurrentPositions": 10,
+  "buyMultiplier": 1.5451164361485092,
+  "bandMultiplier": 1.644076684642352
 }
