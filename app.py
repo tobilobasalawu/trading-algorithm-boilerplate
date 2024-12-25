@@ -43,7 +43,9 @@ def update_graph(n_intervals):
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
 
-            print(f"\nGraph failed to load: {e} => {fname, exc_tb.tb_lineno}\n")
+            print(
+                f"\nGraph failed to load: {e} => {exc_type, fname, exc_tb.tb_lineno}\n"
+            )
         if not Exception:
             print("\n<========== Graph updated successfully ==========>\n")
     else:
@@ -54,7 +56,9 @@ def update_graph(n_intervals):
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
 
-            print(f"\nGraph failed to load: {e} => {fname, exc_tb.tb_lineno}\n")
+            print(
+                f"\nGraph failed to load: {e} => {exc_type, fname, exc_tb.tb_lineno}\n"
+            )
         if not Exception:
             print("\n<========== Graph updated successfully ==========>\n")
 

@@ -27,9 +27,53 @@ def generate_uid(length):
 
 
 def write_to_json(all_backtests):
-    file_path = os.path.join("results", f"sim-{generate_uid(6)}.json")
+    simulation_id = generate_uid(6)
+    file_path = os.path.join("results", f"sim-{simulation_id}.json")
     all_backtest_dicts = [backtest.to_dict() for backtest in all_backtests]
 
+    with open(file_path, "w") as file:
+        json.dump(all_backtest_dicts, file, indent=2)
+
+    return simulation_id
+
+
+def add_to_top_results(result):
+    file_path = os.path.join("results", ".BEST-BACKTESTS.json")
+
+    try:
+        with open(file_path, "r") as file:
+            existing_data = json.load(file)
+    except (json.JSONDecodeError, FileNotFoundError):
+        print(
+            f"Warning: {file_path} is empty or contains invalid JSON. Initializing empty list."
+        )
+        existing_data = []
+
+    existing_data.append(result.to_dict())
+
+    with open(file_path, "w") as file:
+        json.dump(existing_data, file, indent=2)
+
+
+def load_best_backtests():
+    file_path = os.path.join("results", f".BEST-BACKTESTS.json")
+
+    try:
+        with open(file_path, "r") as file:
+            existing_data = json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        print(
+            f"Warning: {file_path} is empty, missing, or invalid. Returning an empty list."
+        )
+        existing_data = []
+
+    return existing_data
+
+
+def overwrite_top_results(backtests_to_write):
+    file_path = os.path.join("results", f".BEST-BACKTESTS.json")
+
+    all_backtest_dicts = [backtest.to_dict() for backtest in backtests_to_write]
     with open(file_path, "w") as file:
         json.dump(all_backtest_dicts, file, indent=2)
 
