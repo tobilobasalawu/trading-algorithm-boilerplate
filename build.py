@@ -1,4 +1,5 @@
 import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 import api.fetch as fetch
 import core
 import core.data
@@ -26,6 +27,17 @@ def build():
 
     data = core.data.init_graph_data(account)
 
+    # Create a subplot layout with 2 rows
+    fig = make_subplots(
+        rows=2,
+        cols=1,
+        shared_xaxes=True,
+        vertical_spacing=0.1,
+        row_heights=[0.8, 0.2],
+        subplot_titles=[f"{data.ticker} US Equity", "Average True Range (ATR)"],
+    )
+
+    # Add the candlestick chart
     candlestick = go.Candlestick(
         x=data.datetimes,
         open=data.opens,
@@ -47,8 +59,10 @@ def build():
         line=dict(color="orange", width=1),
     )
 
-    fig = go.Figure(data=[candlestick, sma_line])
+    fig.add_trace(candlestick, row=1, col=1)
+    fig.add_trace(sma_line, row=1, col=1)
 
+    # Add buy and sell markers to the candlestick chart
     fig.add_trace(
         go.Scatter(
             x=data.entries.index,
@@ -61,7 +75,9 @@ def build():
             marker_line_color="#eee",
             marker_color="#0ac91d",
             hovertemplate="BUY: %{y}",
-        )
+        ),
+        row=1,
+        col=1,
     )
 
     fig.add_trace(
@@ -76,21 +92,32 @@ def build():
             marker_line_color="#eee",
             marker_color="#b0160e",
             hovertemplate="SELL: %{y}",
-        )
+        ),
+        row=1,
+        col=1,
     )
 
+    # Add the ATR line plot to the second row
+    atr_line = go.Scatter(
+        x=data.datetimes,
+        y=data.atr,
+        mode="lines",
+        name="ATR",
+        line=dict(color="#1f77b4", width=2),
+    )
+    fig.add_trace(atr_line, row=2, col=1)
+
+    # Update layout
     fig.update_layout(
-        title=f"{data.ticker} US Equity",
-        xaxis_title="Date",
-        yaxis_title="Price ($)",
+        title_text=f"{data.ticker} Analysis",
+        xaxis=dict(gridcolor="#262626"),
+        xaxis2=dict(
+            title="Date", gridcolor="#262626"
+        ),  # Second x-axis for the ATR chart
+        yaxis=dict(title="Price ($)", gridcolor="#262626"),
+        yaxis2=dict(title="ATR", gridcolor="#262626"),
         xaxis_rangeslider_visible=False,
         template="plotly_dark",
-        xaxis=dict(
-            type="category",
-            tickmode="linear",
-            dtick=(len(data.closes) / 10),
-            gridcolor="#262626",
-        ),
     )
 
     return fig

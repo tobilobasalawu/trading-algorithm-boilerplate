@@ -62,8 +62,12 @@ def init_graph_data(account):
     data_obj.calc_atr()
     data_obj.calc_sma()
     data_obj.calc_std_dev()
+    data_obj.sma = data_obj.sma[cutoff_period:]
+    data_obj.rsi = data_obj.rsi[cutoff_period:]
+    data_obj.atr = data_obj.atr[cutoff_period:]
+    data_obj.std_dev = data_obj.std_dev[cutoff_period:]
 
-    datetimes = df.index.to_series()[cutoff_period:]
+    data_obj.datetimes = df.index.to_series()[cutoff_period:]
     data_obj.closes = df.iloc[:, 0][cutoff_period:]
     data_obj.highs = df.iloc[:, 1][cutoff_period:]
     data_obj.lows = df.iloc[:, 2][cutoff_period:]
@@ -78,7 +82,7 @@ def init_graph_data(account):
 
     if config["addCsv"] == True:
         number = utils.generate_number(4)
-        df.to_csv(f"{data_obj.ticker}_{number}.csv")
+        df.to_csv(f"z.{data_obj.ticker}_{number}.csv")
 
     data_obj.entries, data_obj.exits = order.indicators(account, data_obj)
 

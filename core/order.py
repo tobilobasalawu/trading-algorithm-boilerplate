@@ -21,8 +21,10 @@ def indicators(account, data):
     - closes: A list of closing prices.
     - highs: A list of high prices.
     - lows: A list of low prices.
-    - account.rsi: A list of RSI values.
-    - account.sma: A list of SMA values.
+    - data.rsi: A list of RSI values.
+    - data.sma: A list of SMA values.
+    - data.atr: A list of ATR values.
+    - data.std_dev: A list of standard deviation values.
 
     All these values line up for each of your candles. For example, if you took datetimes[6], 
     closes[6] and account.rsi[6], each value would correlate to the same candle; the 7th candle.
@@ -30,20 +32,38 @@ def indicators(account, data):
 
     # <==================== Add your custom indicator logic below ====================>
 
+    candles = []
     for i in range(len(data.closes) - data.max_period):
+        candle = {}
+        candle["datetime"] = datetimes[i]
+        candle["open"] = opens[i]
+        candle["close"] = closes[i]
+        candle["high"] = highs[i]
+        candle["low"] = lows[i]
+        candle["sma"] = data.sma[i]
+        candle["rsi"] = data.rsi[i]
+        candle["atr"] = data.atr[i]
+        candle["std_dev"] = data.std_dev[i]
+
+        candles.append(candle)
         # iterate through the candles. It doesn't matter which value you use (rsi, datetimes, opens, closes, highs, lows) as all these lists are the same length.
         # One value from each of these lists makes up the data needed to render 1 candle.
 
-        if data.rsi[i] < 30:
-            entries = indicator.add(entries, datetimes[i], closes[i])
-            account.buy_order(datetimes[i], config["baseOrderValue"], closes[i])
+    for i in range(len(candles)):
+        if candles[i]["rsi"] < 30:
+            entries = indicator.add(
+                entries, candles[i]["datetime"], candles[i]["close"]
+            )
+            account.buy_order(
+                candles[i]["datetime"], config["baseOrderValue"], candles[i]["close"]
+            )
             log.append("BUY")
-        elif data.rsi[i] > 70 and log[-1] == "BUY":
-            exits = indicator.add(exits, datetimes[i], closes[i])
-            account.sell_order(datetimes[i], closes[i])
+        elif candles[i]["rsi"] > 70 and log[-1] == "BUY":
+            exits = indicator.add(exits, candles[i]["datetime"], candles[i]["close"])
+            account.sell_order(candles[i]["datetime"], candles[i]["close"])
             log.append("SELL")
 
-        account.open_position_amount = account.shares_owned * closes[i]
+        account.open_position_amount = account.shares_owned * candles[i]["close"]
         account.balance_absolute = (
             account.uninvested_balance + account.open_position_amount
         )

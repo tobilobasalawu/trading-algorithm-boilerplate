@@ -20,7 +20,7 @@ server = app.server
 # App layout
 app.layout = html.Div(
     [
-        dcc.Graph(id="candles", style={"height": "100vh"}),
+        dcc.Graph(id="candles", style={"height": "125vh"}),
         dcc.Interval(
             id="interval", interval=86400000
         ),  # Set this interval to something low if you want a live chart (2000 = updates every 2000ms)
