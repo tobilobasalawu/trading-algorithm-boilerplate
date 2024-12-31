@@ -7,6 +7,7 @@ from core.Account import Account
 from core.Backtest import Backtest
 import utils.variables
 import numpy as np
+import utils.convert as convert
 
 
 def build():
@@ -26,8 +27,10 @@ def build():
     )
 
     data = core.data.init_graph_data(account)
+    data.datetimes, data.opens, data.closes, data.highs, data.lows = (
+        convert.series_to_lists(data)
+    )
 
-    # Create a subplot layout with 2 rows
     fig = make_subplots(
         rows=2,
         cols=1,
@@ -37,7 +40,6 @@ def build():
         subplot_titles=[f"{data.ticker} US Equity", "Average True Range (ATR)"],
     )
 
-    # Add the candlestick chart
     candlestick = go.Candlestick(
         x=data.datetimes,
         open=data.opens,
@@ -49,6 +51,7 @@ def build():
         decreasing=dict(line=dict(color="#eb4034")),
         increasing_fillcolor="#16a16e",
         decreasing_fillcolor="#eb4034",
+        hovertext=data.std_dev,
     )
 
     sma_line = go.Scatter(
@@ -62,7 +65,6 @@ def build():
     fig.add_trace(candlestick, row=1, col=1)
     fig.add_trace(sma_line, row=1, col=1)
 
-    # Add buy and sell markers to the candlestick chart
     fig.add_trace(
         go.Scatter(
             x=data.entries.index,
@@ -70,8 +72,8 @@ def build():
             mode="markers",
             name="BUY",
             marker_symbol="arrow-up",
-            marker_size=15,
-            marker_line_width=2,
+            marker_size=8,
+            marker_line_width=1,
             marker_line_color="#eee",
             marker_color="#0ac91d",
             hovertemplate="BUY: %{y}",
@@ -87,8 +89,8 @@ def build():
             mode="markers",
             name="SELL",
             marker_symbol="arrow-down",
-            marker_size=15,
-            marker_line_width=2,
+            marker_size=8,
+            marker_line_width=1,
             marker_line_color="#eee",
             marker_color="#b0160e",
             hovertemplate="SELL: %{y}",
@@ -97,7 +99,6 @@ def build():
         col=1,
     )
 
-    # Add the ATR line plot to the second row
     atr_line = go.Scatter(
         x=data.datetimes,
         y=data.atr,
@@ -107,15 +108,12 @@ def build():
     )
     fig.add_trace(atr_line, row=2, col=1)
 
-    # Update layout
     fig.update_layout(
-        title_text=f"{data.ticker} Analysis",
-        xaxis=dict(gridcolor="#262626"),
-        xaxis2=dict(
-            title="Date", gridcolor="#262626"
-        ),  # Second x-axis for the ATR chart
-        yaxis=dict(title="Price ($)", gridcolor="#262626"),
-        yaxis2=dict(title="ATR", gridcolor="#262626"),
+        title_text=f"{data.ticker}",
+        xaxis=dict(gridcolor="#1b1b1b", type="category"),
+        xaxis2=dict(title="Date", gridcolor="#1b1b1b"),
+        yaxis=dict(title="Price ($)", gridcolor="#1b1b1b"),
+        yaxis2=dict(title="ATR", gridcolor="#1b1b1b"),
         xaxis_rangeslider_visible=False,
         template="plotly_dark",
     )
@@ -127,9 +125,10 @@ def simulate():
     print("Working...\n")
 
     ongoing_balances = []
-
     chart_lines = []
     all_backtests = []
+    all_graph_data = []
+
     config = fetch.get_settings()
 
     if config["simBestBacktests"] == False:
@@ -240,29 +239,36 @@ def simulate():
             mode="lines",
             name="Balance",
             line=dict(color=utils.variables.random_colour(), width=1),
-            hovertemplate=f"Sim {backtest_result.unique_id}. Final balance: {backtest_result.final_amount}",
+            hovertemplate="$%{y}\n %{x}"
+            + f"Sim {backtest_result.unique_id}. Total return: {backtest_result.total_return:.2f}%.",
         )
 
         all_backtests.append(backtest_result)
         ongoing_balances.append(data.ongoing_balance)
 
         chart_lines.append(line)
+        all_graph_data.append(data)
         print(f"Finished simulation {(i + 1)}/{iterations}")
 
-    max_ma_period = 0
-    max_rsi_period = 0
-    max_atr_period = 0
-    max_std_dev_period = 0
     final_amounts = []
     total_returns = []
 
-    for result in all_backtests:
-        max_ma_period = max(max_ma_period, result.ma_period)
-        max_rsi_period = max(max_rsi_period, result.rsi_period)
-        max_atr_period = max(max_atr_period, result.atr_period)
-        max_std_dev_period = max(max_std_dev_period, result.std_dev_period)
-        final_amounts.append(result.final_amount)
-        total_returns.append(result.total_return)
+    for backtest in all_backtests:
+        final_amounts.append(backtest.final_amount)
+        total_returns.append(backtest.total_return)
+
+    all_line_lengths = [
+        len(graph_data.ongoing_balance) for graph_data in all_graph_data
+    ]
+    shortest_line_length = min(all_line_lengths)
+    for graph_data in all_graph_data:
+        graph_data.ongoing_balance = graph_data.ongoing_balance[
+            (len(graph_data.ongoing_balance) - shortest_line_length) :
+        ]
+        graph_data.datetimes.to_list()
+        graph_data.datetimes = graph_data.datetimes[
+            (len(graph_data.datetimes) - shortest_line_length) :
+        ]
 
     final_amounts_percentile = np.percentile(
         final_amounts, config["topResultsPercentile"]
@@ -278,7 +284,8 @@ def simulate():
             result.final_amount > final_amounts_percentile
             or result.total_return > total_returns_percentile
         ) and config["simBestBacktests"] == False:
-            utils.variables.add_to_top_results(result)
+            if config["addToTopResults"] == True:
+                utils.variables.add_to_top_results(result)
             top_backtests_count += 1
         elif (
             result.final_amount > final_amounts_percentile
@@ -290,17 +297,13 @@ def simulate():
     if config["simBestBacktests"] == True:
         utils.variables.overwrite_top_results(new_best_backtests)
 
-    max_period_length = max(
-        max_ma_period, max_rsi_period, max_atr_period, max_std_dev_period
-    )
-    shortest_line_length = len(data.closes) - max_period_length
-
-    ongoing_balances = [balance[:shortest_line_length] for balance in ongoing_balances]
-
     for i in range(len(chart_lines)):
         chart_lines[i]["y"] = ongoing_balances[i]
 
-    simulation_id = utils.variables.write_to_json(all_backtests)
+    if config["writeBacktestsToJSON"] == True:
+        simulation_id = utils.variables.write_to_json(all_backtests)
+    else:
+        simulation_id = utils.variables.generate_uid(6)
     print(
         f"\nSimulation {simulation_id} complete. {top_backtests_count} backtests committed to best results.\n\n======================================================================"
     )
@@ -324,3 +327,9 @@ def simulate():
     )
 
     return fig
+
+
+# For testing:
+
+# build()
+# simulate()

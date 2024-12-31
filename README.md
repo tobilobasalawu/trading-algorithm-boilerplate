@@ -195,7 +195,7 @@ To optimise strategies:
 
 1. Set `simulate` to `true` in `config.json`.
 2. Specify the number of simulations (`simulations`).
-3. Initial results are saved for analysis, with top-performing strategies having the option to be re-simulated by setting `simBestBacktests` to `true`. The results from these simulations will overrwite the `results/.BEST-BACKTESTS.json` file with the new best backtest results.
+3. Initial results are saved for analysis, with top-performing strategies having the option to be re-simulated by setting `simBestBacktests` to `true`. The results from these simulations will overrwite the `z.results/.BEST-BACKTESTS.json` file with the new best backtest results.
 
 ---
 

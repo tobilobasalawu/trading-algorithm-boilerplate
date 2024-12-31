@@ -169,12 +169,16 @@ def init_sim_data(account):
     data_obj.calc_atr()
     data_obj.calc_sma()
     data_obj.calc_std_dev()
+    data_obj.sma = data_obj.sma[cutoff_period:]
+    data_obj.rsi = data_obj.rsi[cutoff_period:]
+    data_obj.atr = data_obj.atr[cutoff_period:]
+    data_obj.std_dev = data_obj.std_dev[cutoff_period:]
 
-    datetimes = df.index.to_series()[cutoff_period:]
-    closes = df.iloc[cutoff_period:, 0]
-    highs = df.iloc[cutoff_period:, 1]
-    lows = df.iloc[cutoff_period:, 2]
-    opens = df.iloc[cutoff_period:, 3]
+    data_obj.datetimes = df.index.to_series()[cutoff_period:]
+    data_obj.closes = df.iloc[:, 0][cutoff_period:]
+    data_obj.highs = df.iloc[:, 1][cutoff_period:]
+    data_obj.lows = df.iloc[:, 2][cutoff_period:]
+    data_obj.opens = df.iloc[:, 3][cutoff_period:]
 
     data_obj.entries, data_obj.exits = order.indicators(account, data_obj)
 
@@ -246,12 +250,16 @@ def init_backtest_data(all_backtests, account, i):
     data_obj.calc_atr()
     data_obj.calc_sma()
     data_obj.calc_std_dev()
+    data_obj.sma = data_obj.sma[cutoff_period:]
+    data_obj.rsi = data_obj.rsi[cutoff_period:]
+    data_obj.atr = data_obj.atr[cutoff_period:]
+    data_obj.std_dev = data_obj.std_dev[cutoff_period:]
 
-    datetimes = df.index.to_series()[cutoff_period:]
-    closes = df.iloc[cutoff_period:, 0]
-    highs = df.iloc[cutoff_period:, 1]
-    lows = df.iloc[cutoff_period:, 2]
-    opens = df.iloc[cutoff_period:, 3]
+    data_obj.datetimes = df.index.to_series()[cutoff_period:]
+    data_obj.closes = df.iloc[:, 0][cutoff_period:]
+    data_obj.highs = df.iloc[:, 1][cutoff_period:]
+    data_obj.lows = df.iloc[:, 2][cutoff_period:]
+    data_obj.opens = df.iloc[:, 3][cutoff_period:]
 
     data_obj.entries, data_obj.exits = order.indicators(account, data_obj)
 
