@@ -23,6 +23,8 @@ class GraphData:
         entries,
         exits,
         ongoing_balance,
+        stoploss_regions,
+        takeprofit_regions,
     ):
         self.account = account
         self.ticker = ticker
@@ -43,13 +45,15 @@ class GraphData:
         self.entries = entries
         self.exits = exits
         self.ongoing_balance = ongoing_balance
+        self.stoploss_regions = stoploss_regions
+        self.takeprofit_regions = takeprofit_regions
 
     def calc_sma(self):
         self.sma = []
         closes = self.closes.to_list()
         for i in range(len(closes)):
             window = closes[i - self.max_period : i]
-            self.sma.append(round((sum(window) / self.max_period), 2))
+            self.sma.append(sum(window) / self.max_period)
         return self.sma
 
     def calc_rsi(self):
@@ -67,6 +71,8 @@ class GraphData:
                 elif window[j + 1] - window[j] > 0:
                     gains.append(round((window[j + 1] - window[j]), 2))
 
+            losses = [loss for loss in losses if loss > 0]
+
             try:
                 avg_gain = sum(gains) / len(gains)
             except ZeroDivisionError as error:
@@ -76,13 +82,17 @@ class GraphData:
             except ZeroDivisionError as error:
                 no_losses = True
 
-            if no_gains == True:
+            if no_gains:
                 relative_strength = 0
-            elif no_losses == True:
+            elif no_losses:
                 relative_strength = 100
             else:
                 relative_strength = avg_gain / avg_loss
-            self.rsi.append(round(100 - (100 / (1 + relative_strength)), 2))
+
+            if relative_strength == 100:
+                self.rsi.append(100.0)
+            else:
+                self.rsi.append(round(100 - (100 / (1 + relative_strength)), 2))
 
         return self.rsi
 

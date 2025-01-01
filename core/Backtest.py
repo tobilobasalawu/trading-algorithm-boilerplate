@@ -19,6 +19,10 @@ class Backtest:
         max_concurrent_positions,
         buy_multiplier,
         band_multiplier,
+        A_strategy_1,
+        B_strategy_1,
+        stoploss_atr_multiplier,
+        takeprofit_atr_multiplier,
     ):
         # Constants
         self.unique_id = unique_id
@@ -38,6 +42,10 @@ class Backtest:
         self.max_concurrent_positions = max_concurrent_positions
         self.buy_multiplier = buy_multiplier
         self.band_multiplier = band_multiplier
+        self.A_strategy_1 = A_strategy_1
+        self.B_strategy_1 = B_strategy_1
+        self.stoploss_atr_multiplier = stoploss_atr_multiplier
+        self.takeprofit_atr_multiplier = takeprofit_atr_multiplier
 
     def to_dict(self):
         return self.__dict__

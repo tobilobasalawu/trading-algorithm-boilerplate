@@ -24,6 +24,7 @@ def build():
         win_rate=0,
         completed_trades=0,
         profitable_trades=0,
+        open_positions=0,
     )
 
     data = core.data.init_graph_data(account)
@@ -99,6 +100,31 @@ def build():
         col=1,
     )
 
+    if config["renderStoplossTakeprofit"] == True:
+        for region in data.takeprofit_regions:
+            fig.add_shape(
+                type="rect",
+                x0=region["x0"],
+                x1=region["x1"],
+                y0=region["y0"],
+                y1=region["y1"],
+                fillcolor=region["fillcolor"],
+                opacity=region["opacity"],
+                line=dict(width=0),
+            )
+
+        for region in data.stoploss_regions:
+            fig.add_shape(
+                type="rect",
+                x0=region["x0"],
+                x1=region["x1"],
+                y0=region["y0"],
+                y1=region["y1"],
+                fillcolor=region["fillcolor"],
+                opacity=region["opacity"],
+                line=dict(width=0),
+            )
+
     atr_line = go.Scatter(
         x=data.datetimes,
         y=data.atr,
@@ -155,6 +181,7 @@ def simulate():
             win_rate=0,
             completed_trades=0,
             profitable_trades=0,
+            open_positions=0,
         )
 
         utils.variables.randomise()
@@ -204,6 +231,14 @@ def simulate():
                 ],
                 buy_multiplier=round(all_best_backtests[i]["buy_multiplier"], 2),
                 band_multiplier=round(all_best_backtests[i]["band_multiplier"], 2),
+                A_strategy_1=round(all_best_backtests[i]["A_strategy_1"], 2),
+                B_strategy_1=round(all_best_backtests[i]["B_strategy_1"], 2),
+                stoploss_atr_multiplier=round(
+                    all_best_backtests[i]["stoploss_atr_multiplier"], 2
+                ),
+                takeprofit_atr_multiplier=round(
+                    all_best_backtests[i]["takeprofit_atr_multiplier"], 2
+                ),
             )
 
         # If existing backtests are being used
@@ -231,6 +266,10 @@ def simulate():
                 max_concurrent_positions=config["maxConcurrentPositions"],
                 buy_multiplier=round(config["buyMultiplier"], 2),
                 band_multiplier=round(config["bandMultiplier"], 2),
+                A_strategy_1=round(config["strategy1"]["A"], 2),
+                B_strategy_1=round(config["strategy1"]["B"], 2),
+                stoploss_atr_multiplier=round(config["stoplossAtrMultiplier"], 2),
+                takeprofit_atr_multiplier=round(config["takeprofitAtrMultiplier"], 2),
             )
 
         line = go.Scatter(

@@ -9,30 +9,17 @@ def randomise():
     # config["maPeriod"] = random.randint(160, 240)
     config["rsiPeriod"] = random.randint(10, 20)
     config["atrPeriod"] = random.randint(15, 25)
-    config["stdDevPeriod"] = random.randint(15, 30)
+    # config["stdDevPeriod"] = random.randint(25, 30)
     config["maxOrderValue"] = random.randint(
         (int(0.2 * config["initialBalance"])), (int(0.8 * config["initialBalance"]))
     )
-    config["maxConcurrentPositions"] = random.randint(2, 10)
     config["buyMultiplier"] = random.uniform(1, 3)
     config["bandMultiplier"] = random.uniform(1, 2)
-    config["advanced"]["stoplossAtrPeriod"] = random.randint(
-        15, 25
-    )  # The ATR period used for determining stoploss
-    config["advanced"]["stoplossAtrMultiplier"] = random.uniform(
-        1.5, 2.5
-    )  # The ATR multiplier used for determining stoploss
-    config["advanced"]["previousXBarsStrategy"] = random.randint(
-        4, 8
-    )  # How many bars to go back to determine buy and sell signals for strategies which use previous candles
-    config["advanced"]["lowLowHighHighStrategy"] = random.randint(
-        4, 8
-    )  # How many bars to go back to determine buy and sell signals for lowest low highest high strategy
-    config["advanced"]["constantOfStandardisation"] = random.randint(
-        2, 100
-    )  # Constant used to standardise the output values of various strategies
-    config["advanced"]["zValueTriggerTheshold"] = random.uniform(0.8, 1.6)
-    config["advanced"]["breakoutPeriod"] = random.randint(45, 75)
+
+    config["strategy1"]["A"] = round(random.uniform(3.4, 3.8), 2)
+    config["strategy1"]["B"] = round(random.uniform(1.2, 1.7), 2)
+    config["stoplossAtrMultiplier"] = round(random.uniform(1.25, 2.25), 2)
+    config["takeprofitAtrMultiplier"] = round(random.uniform(2.5, 3.5), 2)
 
     with open("config.json", "w") as settings:
         json.dump(config, settings, indent=2)

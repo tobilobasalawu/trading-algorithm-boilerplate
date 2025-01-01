@@ -5,6 +5,7 @@ import utils.indicator as indicator
 import api.fetch as api
 from core.Rules import Rules
 import core.strategies as strategies
+from core.StopLossTakeProfit import StopLossTakeProfit
 
 
 def indicators(account, data):
@@ -12,21 +13,7 @@ def indicators(account, data):
     entries = {}  # datetime: close price
     exits = {}  # datetime: close price
     log = [-1]
-
-    decisions = {
-        "strategy_1": {
-            "call": "HOLD",
-            "weight": config["strategyWeights"]["strategy1"],
-        },
-        "strategy_2": {
-            "call": "HOLD",
-            "weight": config["strategyWeights"]["strategy2"],
-        },
-        "strategy_3": {
-            "call": "HOLD",
-            "weight": config["strategyWeights"]["strategy3"],
-        },
-    }
+    stoploss_takeprofit = StopLossTakeProfit()
 
     datetimes, opens, closes, highs, lows = convert.series_to_lists(data)
 
@@ -62,62 +49,101 @@ def indicators(account, data):
 
         candles.append(candle)
 
-    def buy(entries, amount):
-        entries = indicator.add(entries, candles[i]["datetime"], candles[i]["close"])
-        account.buy_order(candles[i]["datetime"], amount, candles[i]["close"])
+    def buy(entries, amount, price):
+        entries = indicator.add(entries, candles[i]["datetime"], price)
+        account.buy_order(candles[i]["datetime"], amount, price)
         log.append("BUY")
 
-    def sell(exits):
-        exits = indicator.add(exits, candles[i]["datetime"], candles[i]["close"])
-        account.sell_order(candles[i]["datetime"], candles[i]["close"])
+    def sell(exits, price):
+        exits = indicator.add(exits, candles[i]["datetime"], price)
+        account.sell_order(candles[i]["datetime"], price)
         log.append("SELL")
-
-    # <==================== Add your custom indicator logic below ====================>
-
-    """
-    Place a buy order:
-    buy(entries, amount)
-
-    Place a sell order:
-    sell(entries)
-    """
 
     initial_buy_amount = config["baseOrderValue"] * config["buyMultiplier"]
     payload = {
         "z": 0,
         "initial_buy_amount": 0,
-        "uninvested_balance": account.uninvested_balance,
+        "account": account,
     }
     rules = Rules(payload)
 
-    for i in range(len(candles)):
+    strategy_1_period = 7
 
-        # Strategy 1
-        strategy_1_response = strategies.ma_below_close_price()
-
-        # Strategy 2
-        strategy_2_response = 0
-
-        # Strategy 3
-        strategy_3_response = 0
-
-        # ======================================
-
-        z = strategy_1_response + strategy_2_response + strategy_3_response
+    for i in range(strategy_1_period, len(candles)):
 
         payload = {
             "initial_buy_amount": initial_buy_amount,
             "uninvested_balance": account.uninvested_balance,
+            "account": account,
         }
         rules.payload = payload
 
-        response = rules.balance_valid()
+        # Check if account is eligible to place a buy order (has enough uninvested capital, hasn't reached maximum amount of open positions, etc.)
+        validate_response = rules.correctify()
+        can_buy = False
+        for value in validate_response.values():
+            if value == True:
+                can_buy = True
+            else:
+                can_buy = False
+                break
 
         # Logic for placing buy and sell orders
-        if response["valid"] == True:
-            pass
+        if can_buy:
+
+            # <==================== Add your custom indicator logic below ====================>
+
+            """
+            <========== Place a buy order: ==========>
+            buy(entries, {amount}, price)
+
+            <========== Update stoploss/takeprofit: ==========>
+            stoploss_takeprofit.update(price, atr, purchase_date)
+
+            <========== Place a sell order: ==========>
+            sell(entries, price)
+
+            <========== Remove stoploss/takeprofit: ==========>
+            stoploss_takeprofit.remove()
+            """
+
+            # Strategy 1
+            strategy_1_response = strategies.bearish_comeback(
+                candles[i - strategy_1_period : i + 1], strategy_1_period
+            )
+            if strategy_1_response["buy"] == True:
+                buy(
+                    entries, strategy_1_response["amount"], strategy_1_response["price"]
+                )
+                stoploss_takeprofit.update(
+                    strategy_1_response["price"],
+                    candles[i]["atr"],
+                    candles[i]["datetime"],
+                )
+
+            # Strategy 2
+
+            """
+            Format your response as a dict with the values you need.
+
+            Example:
+            
+            response = {
+                "buy": True,
+                "price": current_candle["open"],
+                "amount": config["baseOrderValue"],
+            }
+            """
 
         # <==================== Add your custom indicator logic above ====================>
+
+        # Logic for checking if price has breached stoploss/takeprofit:
+
+        if stoploss_takeprofit.values_set:
+            sltp_response = stoploss_takeprofit.exit(candles[i])
+            if sltp_response["sell"] == True:
+                sell(exits, sltp_response["price"])
+                stoploss_takeprofit.remove()
 
         # Logic for updating balance:
 
@@ -129,7 +155,13 @@ def indicators(account, data):
 
         data.ongoing_balance.append(account.balance_absolute)
 
+    # Add entry and exit points to the graph
     entries = pd.Series(entries.values(), index=entries.keys())
     exits = pd.Series(exits.values(), index=exits.keys())
 
-    return entries, exits
+    return (
+        entries,
+        exits,
+        stoploss_takeprofit.stoploss_regions,
+        stoploss_takeprofit.takeprofit_regions,
+    )

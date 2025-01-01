@@ -35,6 +35,8 @@ def init_graph_data(account):
     entries = []
     exits = []
     ongoing_balance = []
+    stoploss_regions = []
+    takeprofit_regions = []
 
     data_obj = api.GraphData(
         account,
@@ -56,6 +58,8 @@ def init_graph_data(account):
         entries,
         exits,
         ongoing_balance,
+        stoploss_regions,
+        takeprofit_regions,
     )
 
     data_obj.calc_rsi()
@@ -84,7 +88,11 @@ def init_graph_data(account):
         number = utils.generate_number(4)
         df.to_csv(f"z.{data_obj.ticker}_{number}.csv")
 
-    data_obj.entries, data_obj.exits = order.indicators(account, data_obj)
+    data_obj.entries, data_obj.exits, stoploss_regions, takeprofit_regions = (
+        order.indicators(account, data_obj)
+    )
+    data_obj.stoploss_regions = stoploss_regions
+    data_obj.takeprofit_regions = takeprofit_regions
 
     account.win_rate = (
         ((account.profitable_trades / account.completed_trades) * 100)
@@ -142,6 +150,8 @@ def init_sim_data(account):
     entries = []
     exits = []
     ongoing_balance = []
+    stoploss_regions = []
+    takeprofit_regions = []
 
     data_obj = api.GraphData(
         account,
@@ -163,6 +173,8 @@ def init_sim_data(account):
         entries,
         exits,
         ongoing_balance,
+        stoploss_regions,
+        takeprofit_regions,
     )
 
     data_obj.calc_rsi()
@@ -180,7 +192,11 @@ def init_sim_data(account):
     data_obj.lows = df.iloc[:, 2][cutoff_period:]
     data_obj.opens = df.iloc[:, 3][cutoff_period:]
 
-    data_obj.entries, data_obj.exits = order.indicators(account, data_obj)
+    data_obj.entries, data_obj.exits, stoploss_regions, takeprofit_regions = (
+        order.indicators(account, data_obj)
+    )
+    data_obj.stoploss_regions = stoploss_regions
+    data_obj.takeprofit_regions = takeprofit_regions
 
     account.profit = account.balance_absolute - config["initialBalance"]
 
@@ -223,6 +239,8 @@ def init_backtest_data(all_backtests, account, i):
     entries = []
     exits = []
     ongoing_balance = []
+    stoploss_regions = []
+    takeprofit_regions = []
 
     data_obj = api.GraphData(
         account,
@@ -244,6 +262,8 @@ def init_backtest_data(all_backtests, account, i):
         entries,
         exits,
         ongoing_balance,
+        stoploss_regions,
+        takeprofit_regions,
     )
 
     data_obj.calc_rsi()
@@ -261,7 +281,11 @@ def init_backtest_data(all_backtests, account, i):
     data_obj.lows = df.iloc[:, 2][cutoff_period:]
     data_obj.opens = df.iloc[:, 3][cutoff_period:]
 
-    data_obj.entries, data_obj.exits = order.indicators(account, data_obj)
+    data_obj.entries, data_obj.exits, stoploss_regions, takeprofit_regions = (
+        order.indicators(account, data_obj)
+    )
+    data_obj.stoploss_regions = stoploss_regions
+    data_obj.takeprofit_regions = takeprofit_regions
 
     account.profit = account.balance_absolute - config["initialBalance"]
 
