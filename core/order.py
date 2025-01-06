@@ -120,7 +120,6 @@ def indicators(account, data):
                     candles[i]["atr"],
                     candles[i]["datetime"],
                 )
-
             # Strategy 2
 
             """

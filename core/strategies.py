@@ -43,12 +43,3 @@ def bearish_comeback(candles, period):
                 "buy": False,
             }
         return response
-
-
-def your_strategy(candle):
-    response = {
-        "buy": True,
-        "amount": config["baseOrderValue"],
-        "price": candle["close"],
-    }
-    return response
