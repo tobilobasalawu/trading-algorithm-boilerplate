@@ -113,6 +113,7 @@ Below is a comprehensive list of all configurable settings available in `config.
   - `simulations`: Number of Monte Carlo simulations to run for parameter optimization.
   - `simBestBacktests`: Boolean (`true`/`false`) to enable or disable using the best backtest results for further simulations.
   - `topResultsPercentile`: Percentile of top-performing simulations to save (e.g., `90` for top 10%).
+  - 
 - **Backtesting**:
   - `initialBalance`: Starting balance of the trading account.
   - `baseOrderValue`: Minimum amount allocated for a single trade.
@@ -120,6 +121,11 @@ Below is a comprehensive list of all configurable settings available in `config.
   - `maxConcurrentPositions`: Maximum number of open positions allowed simultaneously.
   - `buyMultiplier`: Multiplier applied to entry capital for calculating trade size.
   - `bandMultiplier`: Number of standard deviations used for mean reversion triggers.
+ 
+- **Stop Loss/Take Profit**:
+  - `stoplossAtrMultiplier`: How many multiples of current ATR value the stoploss is set below buy price
+  - `takeprofitAtrMultiplier`: How many multiples of current ATR value the takeprofit is set above buy price
+  - `renderStoplossTakeprofit`: Boolean (`true`/`false`) to enable or disable rendering stoploss and takeprofit regions on the chart
 
 ### Example `config.json`
 
@@ -145,7 +151,10 @@ Below is a comprehensive list of all configurable settings available in `config.
   "maxOrderValue": 5000,
   "maxConcurrentPositions": 4,
   "buyMultiplier": 1.2,
-  "bandMultiplier": 1.5
+  "bandMultiplier": 1.5,
+  "stoplossAtrMultiplier": 1.5,
+  "takeprofitAtrMultiplier": 2.5,
+  "renderStoplossTakeprofit": true
 }
 ```
 
