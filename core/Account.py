@@ -17,6 +17,7 @@ class Account:
         win_rate,
         completed_trades,
         profitable_trades,
+        open_positions,
     ):
         self.uninvested_balance = uninvested_balance  # Initial account balance
         # e.g. 10 = minimum of 10% of account balance put into each trade
@@ -31,6 +32,7 @@ class Account:
         self.win_rate = win_rate
         self.completed_trades = completed_trades
         self.profitable_trades = profitable_trades
+        self.open_positions = open_positions
 
     def buy_order(self, datetime, order_value, stock_price):  # Place a buy order
         order = {
@@ -46,6 +48,7 @@ class Account:
         self.shares_owned += order["no_shares"]
         self.open_position_amount = self.shares_owned * order["price"]
         self.balance_absolute = self.uninvested_balance + self.open_position_amount
+        self.open_positions += 1
 
         self.orders.append(order)
 
@@ -72,6 +75,7 @@ class Account:
         self.total_invested = 0
         self.shares_owned = 0
         self.open_position_amount = 0
+        self.open_positions = 0
 
         self.orders.append(order)
 

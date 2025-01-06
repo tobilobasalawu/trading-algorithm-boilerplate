@@ -23,6 +23,8 @@ class GraphData:
         entries,
         exits,
         ongoing_balance,
+        stoploss_regions,
+        takeprofit_regions,
     ):
         self.account = account
         self.ticker = ticker
@@ -43,19 +45,21 @@ class GraphData:
         self.entries = entries
         self.exits = exits
         self.ongoing_balance = ongoing_balance
+        self.stoploss_regions = stoploss_regions
+        self.takeprofit_regions = takeprofit_regions
 
     def calc_sma(self):
         self.sma = []
         closes = self.closes.to_list()
-        for i in range(self.ma_period, len(closes)):
-            window = closes[i - self.ma_period : i]
-            self.sma.append(sum(window) / self.ma_period)
+        for i in range(len(closes)):
+            window = closes[i - self.max_period : i]
+            self.sma.append(sum(window) / self.max_period)
         return self.sma
 
     def calc_rsi(self):
         self.rsi = []
         closes = self.closes.to_list()
-        for i in range(self.ma_period, len(closes)):
+        for i in range(len(closes)):
             no_gains = False
             no_losses = False
             window = closes[i - self.rsi_period : i]
@@ -63,9 +67,11 @@ class GraphData:
             losses = []
             for j in range(len(window) - 1):
                 if window[j + 1] - window[j] < 0:
-                    losses.append(abs(window[j + 1] - window[j]))
+                    losses.append(round((abs(window[j + 1] - window[j])), 2))
                 elif window[j + 1] - window[j] > 0:
-                    gains.append(window[j + 1] - window[j])
+                    gains.append(round((window[j + 1] - window[j]), 2))
+
+            losses = [loss for loss in losses if loss > 0]
 
             try:
                 avg_gain = sum(gains) / len(gains)
@@ -76,13 +82,17 @@ class GraphData:
             except ZeroDivisionError as error:
                 no_losses = True
 
-            if no_gains == True:
+            if no_gains:
                 relative_strength = 0
-            elif no_losses == True:
+            elif no_losses:
                 relative_strength = 100
             else:
                 relative_strength = avg_gain / avg_loss
-            self.rsi.append(100 - (100 / (1 + relative_strength)))
+
+            if relative_strength == 100:
+                self.rsi.append(100.0)
+            else:
+                self.rsi.append(round(100 - (100 / (1 + relative_strength)), 2))
 
         return self.rsi
 
@@ -94,16 +104,16 @@ class GraphData:
         closes = self.closes.to_list()
 
         true_ranges = []
-        for i in range(1, len(closes)):
+        for i in range(len(closes)):
             high_low = highs[i] - lows[i]
             high_close = abs(highs[i] - closes[i - 1])
             low_close = abs(lows[i] - closes[i - 1])
             true_range = max(high_low, high_close, low_close)
             true_ranges.append(true_range)
 
-        for i in range(self.atr_period, len(true_ranges) + 1):
+        for i in range(len(true_ranges)):
             window = true_ranges[i - self.atr_period : i]
-            self.atr.append(sum(window) / self.atr_period)
+            self.atr.append(round((sum(window) / self.atr_period), 2))
 
         return self.atr
 
@@ -111,11 +121,11 @@ class GraphData:
         self.std_dev = []
         closes = self.closes.to_list()
 
-        for i in range(self.std_dev_period, len(closes) + 1):
+        for i in range(len(closes)):
             window = closes[i - self.std_dev_period : i]
             mean = sum(window) / self.std_dev_period
             variance = sum((x - mean) ** 2 for x in window) / self.std_dev_period
             std_dev = variance**0.5
-            self.std_dev.append(std_dev)
+            self.std_dev.append(round(std_dev, 2))
 
         return self.std_dev

@@ -6,16 +6,20 @@ import api.fetch as api
 
 def randomise():
     config = api.get_settings()
-    config["maPeriod"] = random.randint(14, 50)
-    config["rsiPeriod"] = random.randint(7, 20)
-    config["atrPeriod"] = random.randint(7, 20)
-    config["stdDevPeriod"] = random.randint(7, 20)
+    # config["maPeriod"] = random.randint(160, 240)
+    config["rsiPeriod"] = random.randint(10, 20)
+    config["atrPeriod"] = random.randint(15, 25)
+    # config["stdDevPeriod"] = random.randint(25, 30)
     config["maxOrderValue"] = random.randint(
         (int(0.2 * config["initialBalance"])), (int(0.8 * config["initialBalance"]))
     )
-    config["maxConcurrentPositions"] = random.randint(2, 10)
     config["buyMultiplier"] = random.uniform(1, 3)
     config["bandMultiplier"] = random.uniform(1, 2)
+
+    config["strategy1"]["A"] = round(random.uniform(3.4, 3.8), 2)
+    config["strategy1"]["B"] = round(random.uniform(1.2, 1.7), 2)
+    config["stoplossAtrMultiplier"] = round(random.uniform(1.25, 2.25), 2)
+    config["takeprofitAtrMultiplier"] = round(random.uniform(2.5, 3.5), 2)
 
     with open("config.json", "w") as settings:
         json.dump(config, settings, indent=2)
@@ -28,7 +32,7 @@ def generate_uid(length):
 
 def write_to_json(all_backtests):
     simulation_id = generate_uid(6)
-    file_path = os.path.join("results", f"sim-{simulation_id}.json")
+    file_path = os.path.join("z.results", f"sim-{simulation_id}.json")
     all_backtest_dicts = [backtest.to_dict() for backtest in all_backtests]
 
     with open(file_path, "w") as file:
@@ -38,7 +42,7 @@ def write_to_json(all_backtests):
 
 
 def add_to_top_results(result):
-    file_path = os.path.join("results", ".BEST-BACKTESTS.json")
+    file_path = os.path.join("z.results", ".BEST-BACKTESTS.json")
 
     try:
         with open(file_path, "r") as file:
@@ -56,7 +60,7 @@ def add_to_top_results(result):
 
 
 def load_best_backtests():
-    file_path = os.path.join("results", f".BEST-BACKTESTS.json")
+    file_path = os.path.join("z.results", f".BEST-BACKTESTS.json")
 
     try:
         with open(file_path, "r") as file:
@@ -71,7 +75,7 @@ def load_best_backtests():
 
 
 def overwrite_top_results(backtests_to_write):
-    file_path = os.path.join("results", f".BEST-BACKTESTS.json")
+    file_path = os.path.join("z.results", f".BEST-BACKTESTS.json")
 
     all_backtest_dicts = [backtest.to_dict() for backtest in backtests_to_write]
     with open(file_path, "w") as file:
