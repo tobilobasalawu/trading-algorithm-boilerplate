@@ -1,100 +1,128 @@
-# The Easiest Way to Create your Own Trading Algorithm!
+# Trading Algorithm Boilerplate
 
-Creating your own trading strategy has always been something you've wanted to explore, but you've always thought "it'll be way too hard" or "there will be so much learning I'll have to do beforehand", or maybe you're only really into the maths/finance aspect and don't want to bother with all the technical stuff?
+This project provides a robust **trading algorithm simulator** that allows users to build, test, and optimize trading strategies using historical or live stock data. The platform features advanced candlestick visualizations, indicator plotting, and Monte Carlo simulations to find the best-performing parameter configurations. All tools are pre-configured, making it beginner-friendly yet powerful for advanced users.
 
-It is now easier than ever to get stuck in to the maths and **create your own indicators** on a pre-setup Plotly graph. You won't need to worry about technical setup with this **stock trading algorithm bootstrapper**, which features various charting aspects, realtime indicators, simple implementation and a wide range of configurable settings.
+---
 
-You will be able to easily test your algorithm to see how it performs against both live and historical data. **This program only performs simulations, and does not trade with real money**.
+## Features
 
-_Please note: this project is a work-in-progress and may not yet come with a comprehensive list of visualisation features. This project is however open to pull requsts and you may contribute if you wish to do so._
+- **Candlestick Charting**: Visualize stock prices alongside custom indicators.
+- **Indicators**: Support for Moving Average (SMA), Relative Strength Index (RSI), Average True Range (ATR), and Standard Deviation.
+- **Monte Carlo Simulations**: Run multiple simulations to optimize parameters.
+- **Customizable Configurations**: Tweak settings in `config.json` to control backtesting parameters.
+- **Real-Time and Historical Data**: Seamlessly switch between live and past data.
 
-## Getting started
+---
 
-You won't need any knowledge of UI development or various Python frameworks - this bootstrapper is designed for people who know (or want to learn) some Python, and want to put their coding and maths skills to the test. See the guide below for getting setup in under 5 minutes:
+## Quickstart Guide
 
-### Step 1
+### 1. Install Python
 
-Make sure you have Python installed on your laptop. If you don't have it installed, you can install the latest version [here](https://www.python.org/downloads/).
+Ensure Python (>= 3.7) is installed. Download it [here](https://www.python.org/downloads/).
 
-### Step 2
+### 2. Clone the Repository
 
-Go to the top right of this repository and click 'fork'. This will add a copy of the repo into your profile.
-
-### Step 3
-
-Create a new folder on your laptop. Type into your terminal command line `cd path/to/your/new/folder` to change the working directory to your new folder. Then paste the following:
+Fork and clone this repository:
 
 ```shell
-git clone https://github.com/your-username/trading-indicator.git
+git clone https://github.com/your-username/trading-algorithm-boilerplate.git
+cd trading-algorithm-boilerplate
 ```
 
-### Step 4
+### 3. Set up a Virtual Environment
 
-You now have a local copy of the forked repository in your new folder. In order to get it running, copy these 4 simple commands:
-
-### **Windows**
-
-Create a virtual environment to install your packages:
+### **On Windows:**
 
 ```shell
 python -m venv .venv
-```
-
-Activate the virtual environment:
-
-```shell
 source .venv/Scripts/activate
 ```
 
-Install your packages:
+### **On Mac/Linux:**
+
+```shell
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+### 4. Install Dependencies
 
 ```shell
 pip install -r requirements.txt
 ```
 
-_If there are any ModuleNotFound errors after running this command, try installing the offending packages individually by using the following:_
+### 5. Configure Settings
 
-```shell
-pip install offending-package
+Open config.json and set your preferences. For example:
+
+```json
+{
+  "ticker": "AAPL",
+  "simulate": true,
+  "simulations": 50,
+  "maPeriod": 20,
+  "rsiPeriod": 14,
+  "initialBalance": 10000
+}
 ```
 
-Run the server:
+There are some more advanced settings that you can set if you wish for further customisation.
+
+### 5. Run the Application:
+
+Start the server:
 
 ```shell
 python main.py
 ```
 
+Visit [http://127.0.0.1:8050/](http://127.0.0.1:8050/) in your browser to see the charts.
+
 ---
 
-### **MacOS/Linux**
+## How it Works
 
-Create a virtual environment to install your packages:
+1. Data Fetching: The app fetches stock data using the ticker and interval specified in `config.json`.
+2. Indicator Calculations: SMA, RSI, and other metrics are computed for the dataset.
+3. Simulations: Monte Carlo simulations iterate through possible parameter configurations to identify the best-performing strategies.
+4. Visualization: Indicators and trade signals are plotted on an interactive candlestick chart using Plotly.
 
-```shell
-python3 -m venv .venv
-```
+### Configurable Settings
 
-Activate the virtual environment:
+Below is a comprehensive list of all configurable settings available in `config.json`:
 
-```shell
-source .venv/bin/activate
-```
+- **General**:
 
-Install your packages:
+  - `ticker`: The stock ticker to load data for (e.g., `"AAPL"` for Apple).
+  - `simulate`: Boolean (`true`/`false`) to enable or disable simulations.
+  - `mostRecent`: Boolean (`true`/`false`) to specify whether the app uses the most recent data or a custom date range.
+  - `interval`: Time interval between each candle (e.g., `"1d"`, `"60m"`, `"5m"`).
+  - `timePeriod`: Specifies the time period for analysis when `mostRecent` is `true` (e.g., `"5d"`).
+  - `startDate`: Start date for data when `mostRecent` is `false` (format: `"YYYY-MM-DD"`).
+  - `endDate`: End date for data when `mostRecent` is `false` (format: `"YYYY-MM-DD"`).
+  - `addCsv`: Boolean (`true`/`false`) to determine whether the candlestick chart data should be exported to a CSV file.
 
-```shell
-pip install -r requirements.txt
-```
+- **Indicators**:
 
-_If there are any ModuleNotFound errors after running this command, try installing the offending packages individually by using the following:_
+  - `maPeriod`: Number of candles used to calculate the Simple Moving Average (SMA).
+  - `rsiPeriod`: Number of candles used to calculate the Relative Strength Index (RSI).
+  - `atrPeriod`: Number of candles used to calculate the Average True Range (ATR).
+  - `stdDevPeriod`: Number of candles used to calculate the Standard Deviation.
 
-```shell
-pip install offending-package
-```
+- **Simulations**:
+  - `simulations`: Number of Monte Carlo simulations to run for parameter optimization.
+  - `simBestBacktests`: Boolean (`true`/`false`) to enable or disable using the best backtest results for further simulations.
+  - `topResultsPercentile`: Percentile of top-performing simulations to save (e.g., `90` for top 10%).
+- **Backtesting**:
+  - `initialBalance`: Starting balance of the trading account.
+  - `baseOrderValue`: Minimum amount allocated for a single trade.
+  - `maxOrderValue`: Maximum allowable value for a single trade.
+  - `maxConcurrentPositions`: Maximum number of open positions allowed simultaneously.
+  - `buyMultiplier`: Multiplier applied to entry capital for calculating trade size.
+  - `bandMultiplier`: Number of standard deviations used for mean reversion triggers.
 
-Run the server:
+### Example `config.json`
 
-<<<<<<< HEAD
 ```json
 {
   "ticker": "MSFT",
@@ -118,45 +146,12 @@ Run the server:
   "maxConcurrentPositions": 4,
   "buyMultiplier": 1.2,
   "bandMultiplier": 1.5
-=======
-```shell
-python3 main.py
-```
-
-## Setup result
-
-You should now see something like this in your terminal:
-
-```
-Dash is running on http://127.0.0.1:8050/
-
- * Serving Flask app 'app'
- * Debug mode: on
-```
-
-Paste this URL into your browser and you should see a candlestick graph. Each time you update your code, this graph will automatically update.
-
-## Creating your algorithm
-
-The app is now all set up for you to start creating your algorithm in the `core/order.py` folder. You will see a section marked out for where to implement your logic, and don't worry - you won't need to install any other external packages from here on unless you wish to.
-
-### How do I start adding indicators?
-
-All indicators that are rendered on the graph are grabbed from the `entries` and `exits` dictionaries within the `order.py` file - this is where you'll be implementing your logic. They take a key (a datetime: string) and a value (close price: integer) - this is the closing price for any given candle.
-
-```python
-# Format => datetime (string): close price (integer)
-entries = {
-    "2024-12-01": 100
-    "2024-12-03": 80
-}
-
-exits = {
-    "2024-12-02": 120
-    "2024-12-04": 110
->>>>>>> ff33faf2a6eedb89f3dd75517d135916ca590182
 }
 ```
+
+---
+
+## Creating your Algorithm
 
 In order to create a **buy** signal, you will need to use these 3 lines of code:
 
@@ -179,9 +174,7 @@ sell(exits, <price>)
 sell(exits, candles[i]["close"])
 # Place a sell order at the closing price of the current candle
 ```
-
 To help your algorithm decide when to create an indicator, you have the following data available **for each rendered candle**:
-
 ```python
 candle["datetime"]  # Datetime of the candle
 candle["open"]  # Open price of the candle
@@ -193,134 +186,50 @@ candle["rsi"]  # Relative strength index at the candle
 candle["atr"]  # Average true range at the candle
 candle["std_dev"]  # Standard deviation at the candle
 ```
-
 You will be able to access these candles by iterating through each entry in the 'candles' list in `order.py`.
 
-If you shut your app down and decide you want to re-run it, you won't have to create a new virtual environment, you'll just have to re-activate your existing one in a new terminal.
+---
 
-<<<<<<< HEAD
+## Visualisation
+
+The platform dynamically updates visualizations, including:
+
+- **Candlestick Charts**: Price movements.
+- **Buy/Sell Markers**: Entry and exit points.
+- **Indicator Lines**: SMA, RSI, and more.
+
+You will simply need to save your Python files after changing them.
+
+---
+
+## Monte Carlo Simulations
+
+To optimise strategies:
+
 1. Set `simulate` to `true` in `config.json`.
 2. Specify the number of simulations (`simulations`).
 3. Initial results are saved for analysis, with top-performing strategies having the option to be re-simulated by setting `simBestBacktests` to `true`. The results from these simulations will overrwite the `z.results/.BEST-BACKTESTS.json` file with the new best backtest results.
-=======
-## Testing your algorithm
->>>>>>> ff33faf2a6eedb89f3dd75517d135916ca590182
 
-If you've made some changes and you'd like to see them in action, you can either wait for the web page to update (it updates every time you save your code), or you can reactivate your virtual environment by following the setup steps above and running `python main.py` if you're using Windows or `python3 main.py` if you're using MacOS/Linux.
+---
 
-## Docs
+## Roadmap
 
-All the configurable settings can be found in [config.json](https://github.com/JamieWells1/trading-indicator/blob/main/config.json). Have a play around with this and decide what settings you want for your trading strategy.
+Future updates include:
 
-## config.json
+- **Leverage**: Add leverage to a buy order.
+- **Comprehensive** dashboard UI: Check your trades in a dashboard.
+- **Simulations**: Measure how your algorithm performs when run through rigourous simulations.
+- **Create an account**: Keep track of all your past and present trades to see how your model performs over time.
 
-- `ticker`: Change the stock being loaded
-- `mostRecent`: Set whether the chart uses the most recent data for the loaded stock
-- `interval`: Specifies the time interval between each candle in the chart
-- `startDate`: Set when the chart should load data from (only applies if `mostRecent` is set to false)
-- `endDate`: Set when the chart should load data up to (only applies if `mostRecent` is set to false)
-- `timePeriod`: Specifies the time period used for analyzing data (only applies if `mostRecent` is set to true)
-- `movingAvg`: Specifies whether to calculate and display a **Moving Average** (MA) on the chart
-- `maPeriod`: Defines the period (number of candles) used to calculate the Moving Average
-- `rsiPeriod`: Defines the period (number of candles) used to calculate the **Relative Strength Index** (RSI)
-- `addCsv`: Determines whether or not to export the chart's data to a CSV file (available at root folder directory)
-- `initialBalance`: Specifies the initial balance of the trading account
-- `baseOrderValue`: Defines the base amount used for each trade order
+---
 
-Example JSON configuration:
+## Final notes:
 
-```json
-{
-  "ticker": "GOOGL",
-  "mostRecent": true,
-  "interval": "5m",
-  "startDate": "2024-12-01",
-  "endDate": "2024-12-12",
-  "timePeriod": "5d",
-  "movingAvg": true,
-  "maPeriod": 50,
-  "rsiPeriod": 14,
-  "addCsv": false,
-  "initialBalance": 1000,
-  "baseOrderValue": 100
-}
-```
-
-_Most people using this tool won't need to worry about extra tools. For those wanting to add some extra customisation or their own features, see the docs below._
-
-## Built-in functions:
-
-### api/GraphData
-
-Provides access to the `GraphData` class.
-
-```python
-rsi = my_data_object.calc_rsi()
-# Calculate the RSI from the data in my_data_object
-
-sma = my_data_object.calc_sma()
-# Calculate the Simple Moving Average from the data in my_data_object
-```
-
-### api/fetch
-
-- `get_df_selected_tf()`: Get the yfinance dataframe for a given timeframe.
-- `get_df_recent()`: Get the most recent yfinance dataframe.
-- `get_settings()`: Load the settings in `config.json` as a Python object.
-
-### core/Account
-
-Provides access to the `Account` class.
-
-```python
-my_account.buy_order(100, 20)
-# Creates a buy order of $100 at $20 per share
-
-my_account.sell_order(100)
-# Create a sell order of $100
-
-is_valid = my_account.check_balance()
-# Checks if the starting balance is greater than the base order value (returns a boolean)
-```
-
-### core/order.py
-
-See above for how to start adding indicators in this file.
-
-### utils/convert.py
-
-- `series_to_lists(data)`: Takes a Pandas dataframe as a parameter, and returns 5 datetime OHLC values as lists.
-
-### utils/indicator.py
-
-- `add(dict, key, value)`: Adds a key-value pair to a dictionary, and returns the new dictionary.
-- `clear()`: Clears a dictionary.
-
-## Future features
-
-**Leverage**: Add leverage to a buy order.
-
-**Accumulate short positions**: Open short positions.
-
-**Comprehensive dashboard UI**: Check your trades in a dashboard.
-
-**Create an account**: Keep track of all your past and present trades to see how your model performs over time.
-
-## Contribute to this project
-
-If you'd like to contribute to the project, follow these steps:
-
-1. Fork this repository
-2. Create a branch for your feature (`git checkout -b feature-name`)
-3. Make changes and commit them (`git commit -am 'Add new feature'`)
-4. Push to your forked repository (`git push origin feature-name`)
-5. Submit a pull request
-
-## Final notes
-
-- Asset class focus: US equities
+- Asset class focus: US equities and ETFs
 - Data source: yfinance
 
-## Contact
+---
 
-If anything is unclear or you'd like to contact me, please create a new issue [here](https://github.com/JamieWells1/trading-indicator/issues/new).
+## Contribute
+
+We welcome contributions! Submit pull requests or issues on [GitHub](https://github.com/JamieWells1/trading-algorithm-boilerplate/issues)
