@@ -13,6 +13,7 @@ def indicators(account, data):
     entries = {}  # datetime: close price
     exits = {}  # datetime: close price
     log = [-1]
+
     stoploss_takeprofit = StopLossTakeProfit()
 
     datetimes, opens, closes, highs, lows = convert.series_to_lists(data)
