@@ -162,10 +162,11 @@ Below is a comprehensive list of all configurable settings available in `config.
 
 ## Creating your Algorithm
 
-In order to create a **buy** signal, you will need to use these 3 lines of code:
+In order to create a **buy** signal and update your stop loss/take profit, you will need to use these 2 lines of code:
 
 ```python
 buy(entries, <amount>, <price>)
+
 
 # Example:
 
@@ -173,7 +174,7 @@ buy(entries, config["baseOrderValue"], candles[i]["close"])
 # Place a buy order for the base order amount defined in config.json, buy at the closing price of the current candle
 ```
 
-In order to create a **sell** signal, you will need to use these 3 lines of code:
+In order to create a **sell** signal and update your stop loss/take profit, you will need to use these 2 lines of code:
 
 ```python
 sell(exits, <price>)
