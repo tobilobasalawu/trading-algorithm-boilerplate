@@ -132,41 +132,43 @@ exits = {
 }
 ```
 
-In order to add **entries**, you will need to use these 3 lines of code:
+In order to create a **buy** signal, you will need to use these 3 lines of code:
 
 ```python
-entries = indicator.add(entries, "2024-12-01", 20) # "2024-12-01" = your datetime, 20 = closing price for a given candle
-account.buy_order(100, 20) # 100 = base order value, 20 = closing price for a given candle
-log.append("BUY")
+buy(entries, <amount>, <price>)
+
+# Example:
+
+buy(entries, config["baseOrderValue"], candles[i]["close"])
+# Place a buy order for the base order amount defined in config.json, buy at the closing price of the current candle
 ```
 
-In order to add **exits**, you will need to use these 3 lines of code:
+In order to create a **sell** signal, you will need to use these 3 lines of code:
 
 ```python
-exits = indicator.add(exits, "2024-12-01", 20) # "2024-12-01" = your datetime, 20 = closing price for a given candle
-account.sell_order(20) # 20 = closing price for a given candle
-log.append("SELL")
+sell(exits, <price>)
+
+# Example:
+
+sell(exits, candles[i]["close"])
+# Place a sell order at the closing price of the current candle
 ```
 
-To help your algorithm decide when to create an indicator, you have the following data available **for all rendered candles**:
-
-- `datetimes`: A list of all datetimes.
-- `opens`: A list of opening prices.
-- `closes`: A list of closing prices.
-- `highs`: A list of high prices.
-- `lows`: A list of low prices.
-- `account.rsi`: A list of RSI values.
-- `account.sma`: A list of SMA values.
-
-All these values line up for each of your candles. For example, if you took:
+To help your algorithm decide when to create an indicator, you have the following data available **for each rendered candle**:
 
 ```python
-datetimes[6]
-opens[6]
-account.rsi[6]
+candle["datetime"]  # Datetime of the candle
+candle["open"]  # Open price of the candle
+candle["close"]  # Close price of the candle
+candle["high"]  # High price of the candle
+candle["low"]  # Low price of the candle
+candle["sma"]  # Moving average at the candle
+candle["rsi"]  # Relative strength index at the candle
+candle["atr"]  # Average true range at the candle
+candle["std_dev"]  # Standard deviation at the candle
 ```
 
-Each value would correlate to the same candle; the 7th candle.
+You will be able to access these candles by iterating through each entry in the 'candles' list in `order.py`.
 
 If you shut your app down and decide you want to re-run it, you won't have to create a new virtual environment, you'll just have to re-activate your existing one in a new terminal.
 
