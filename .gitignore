@@ -3,3 +3,4 @@ __pycache__
 /utils/__pycache__
 /api/__pycache__
 /core/__pycache__
+data.csv
