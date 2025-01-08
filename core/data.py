@@ -2,19 +2,29 @@ import api.GraphData as api
 import api.fetch as fetch
 import core.order as order
 import utils.variables as utils
+import os
+import pandas as pd
 
 
 def init_graph_data(account):
     config = fetch.get_settings()
 
-    if config["mostRecent"] == False:
-        df, ticker = fetch.get_df_selected_tf(
-            config["ticker"], config["interval"], config["startDate"], config["endDate"]
-        )
+    if config["dummyData"] == False:
+        if config["mostRecent"] == False:
+            df, ticker = fetch.get_df_selected_tf(
+                config["ticker"], config["interval"], config["startDate"], config["endDate"]
+            )
+        else:
+            df, ticker = fetch.get_df_recent(
+                config["ticker"], config["interval"], config["timePeriod"]
+            )
     else:
-        df, ticker = fetch.get_df_recent(
-            config["ticker"], config["interval"], config["timePeriod"]
-        )
+        root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        csv_path = os.path.join(root_path, config["dummyCsvFileName"])
+
+        df = pd.read_csv(csv_path, parse_dates=True, index_col=0)
+
+        ticker = "Custom"
 
     ma_period = config["maPeriod"]
     rsi_period = config["rsiPeriod"]
