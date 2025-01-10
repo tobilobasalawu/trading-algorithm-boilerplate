@@ -103,7 +103,9 @@ Below is a comprehensive list of all configurable settings available in `config.
   - `addCsv`: Boolean (`true`/`false`) to determine whether the candlestick chart data should be exported to a CSV file.
   - `dummyData`: Boolean (`true`/`false`) to determine whether dummy data in the form of a CSV file at the root should be used instead of API data.
   - `dummyCsvFileName`: The file name of your dummy CSV file.
-  - `renderStoplossTakeprofit`: Boolean (`true`/`false`) to enable or disable rendering stoploss and takeprofit regions on the chart. **NOTE:** _If you wish not to use stop loss/take profit and want to trigger your own sell signals, simply set_ `stoplossAtrMultiplier` _and_ `stoplossAtrMultiplier` _in_ `config.json` _to extremely high values, and set_ `renderStoplossTakeprofit` _to_ `false`_._
+  - `renderStoplossTakeprofit`: Boolean (`true`/`false`) to enable or disable rendering stoploss and takeprofit regions on the chart.
+
+  **NOTE:** _If you wish not to use stop loss/take profit and want to trigger your own sell signals, simply set_ `stoplossAtrMultiplier` _and_ `stoplossAtrMultiplier` _in_ `config.json` _to extremely high values, and set_ `renderStoplossTakeprofit` _to_ `false`_._
 
 - **Indicators**:
 
