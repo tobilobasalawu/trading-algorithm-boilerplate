@@ -138,30 +138,44 @@ Below is a comprehensive list of all configurable settings available in `config.
 
 ```json
 {
-  "ticker": "MSFT",
-  "simulate": false,
-  "simulations": 10,
-  "simBestBacktests": false,
-  "topResultsPercentile": 90,
-  "mostRecent": true,
-  "interval": "1d",
-  "timePeriod": "1y",
-  "startDate": "2020-12-01",
-  "endDate": "2024-12-01",
-  "maPeriod": 50,
-  "rsiPeriod": 7,
-  "atrPeriod": 20,
-  "stdDevPeriod": 20,
-  "addCsv": true,
-  "initialBalance": 10000,
-  "baseOrderValue": 1000,
-  "maxOrderValue": 5000,
-  "maxConcurrentPositions": 4,
-  "buyMultiplier": 1.2,
-  "bandMultiplier": 1.5,
-  "stoplossAtrMultiplier": 1.5,
-  "takeprofitAtrMultiplier": 2.5,
-  "renderStoplossTakeprofit": true
+  "general": {
+    "ticker": "AAPL",
+    "simulate": false,
+    "mostRecent": true,
+    "interval": "1d",
+    "timePeriod": "2y",
+    "startDate": "2021-12-28",
+    "endDate": "2024-12-28",
+    "addCsv": false,
+    "dummyData": true,
+    "dummyCsvFileName": "data.csv",
+    "renderStoplossTakeprofit": true
+  },
+  "indicators": {
+    "maPeriod": 50,
+    "rsiPeriod": 14,
+    "atrPeriod": 14,
+    "stdDevPeriod": 20
+  },
+  "simulate": {
+    "simulations": 100,
+    "simBestBacktests": false,
+    "writeBacktestsToJSON": true,
+    "addToTopResults": true,
+    "topResultsPercentile": 90
+  },
+  "account": {
+    "initialBalance": 10000,
+    "baseOrderValue": 1000,
+    "maxOrderValue": 8000,
+    "maxConcurrentPositions": 5
+  },
+  "multipliers": {
+    "buyMultiplier": 3.0,
+    "bandMultiplier": 1.5,
+    "stoplossAtrMultiplier": 1.25,
+    "takeprofitAtrMultiplier": 3.05
+  }
 }
 ```
 
