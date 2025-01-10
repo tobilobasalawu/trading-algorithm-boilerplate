@@ -183,26 +183,31 @@ Below is a comprehensive list of all configurable settings available in `config.
 
 ## Creating your Algorithm
 
-In order to create a **buy** signal, you will need to use these 3 lines of code:
+In order to create a **buy** signal, you will need to use these 2 lines of code:
 
 ```python
 buy(entries, <amount>, <price>)
+stoploss_takeprofit.update(<price>, <atr>, <purchase_date>)
 
 # Example:
 
 buy(entries, config["account"]["baseOrderValue"], candles[i]["close"])
-# Place a buy order for the base order amount defined in config.json, buy at the closing price of the current candle
+stoploss_takeprofit.update(strategy_1_response["price"], candles[i]["atr"], candles[i]["datetime"])
+
+# Place a buy order at the closing price for the amount defined in config.json and update the stop loss/take profit.
 ```
 
-In order to create a **sell** signal, you will need to use these 3 lines of code:
+In order to create a **sell** signal, you will need to use these 2 lines of code:
 
 ```python
 sell(exits, <price>)
+stoploss_takeprofit.remove()
 
 # Example:
 
 sell(exits, candles[i]["close"])
-# Place a sell order at the closing price of the current candle
+stoploss_takeprofit.remove()
+# Place a sell order at the closing price of the current candle and remove stop loss/take profit for the closed position.
 ```
 
 To help your algorithm decide when to create an indicator, you have the following data available **for each rendered candle**:
