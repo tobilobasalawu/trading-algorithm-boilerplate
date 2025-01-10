@@ -137,9 +137,21 @@ def init_graph_data(account):
 def init_sim_data(account):
     config = fetch.get_settings()
 
-    df, ticker = fetch.get_df_selected_tf(
-        config["ticker"], config["interval"], config["startDate"], config["endDate"]
-    )
+    if config["dummyData"] == False:
+        try:
+            df, ticker = fetch.get_df_selected_tf(
+                config["ticker"], config["interval"], config["startDate"], config["endDate"]
+            )
+        except:
+            print("Failed to run simulations: Malformed configuration file.")
+            quit()
+    else:
+        root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        csv_path = os.path.join(root_path, config["dummyCsvFileName"])
+
+        df = pd.read_csv(csv_path, parse_dates=True, index_col=0)
+
+        ticker = "Custom"
 
     ma_period = config["maPeriod"]
     rsi_period = config["rsiPeriod"]

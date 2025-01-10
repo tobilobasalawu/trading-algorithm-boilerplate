@@ -14,21 +14,21 @@
   "dummyData": true,
   "dummyCsvFileName": "data.csv",
   "maPeriod": 50,
-  "rsiPeriod": 10,
-  "atrPeriod": 24,
+  "rsiPeriod": 11,
+  "atrPeriod": 17,
   "stdDevPeriod": 26,
   "addCsv": false,
   "initialBalance": 10000,
-  "baseOrderValue": 10000,
-  "maxOrderValue": 7335,
+  "baseOrderValue": 1000,
+  "maxOrderValue": 8000,
   "maxConcurrentPositions": 5,
-  "buyMultiplier": 1.8537412397876707,
-  "bandMultiplier": 1.7923112059797957,
-  "stoplossAtrMultiplier": 1.34,
-  "takeprofitAtrMultiplier": 2.69,
+  "buyMultiplier": 3.0,
+  "bandMultiplier": 1.5,
+  "stoplossAtrMultiplier": 1.50,
+  "takeprofitAtrMultiplier": 2.50,
   "renderStoplossTakeprofit": true,
   "strategy1": {
-    "A": 3.52,
-    "B": 1.57
+    "A": 3.76,
+    "B": 1.27
   }
 }
