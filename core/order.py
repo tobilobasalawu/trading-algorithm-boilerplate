@@ -60,7 +60,9 @@ def indicators(account, data):
         account.sell_order(candles[i]["datetime"], price)
         log.append("SELL")
 
-    initial_buy_amount = config["baseOrderValue"] * config["buyMultiplier"]
+    initial_buy_amount = (
+        config["account"]["baseOrderValue"] * config["multipliers"]["buyMultiplier"]
+    )
     payload = {
         "z": 0,
         "initial_buy_amount": 0,
@@ -68,9 +70,7 @@ def indicators(account, data):
     }
     rules = Rules(payload)
 
-    strategy_1_period = 7
-
-    for i in range(strategy_1_period, len(candles)):
+    for i in range(len(candles)):
 
         payload = {
             "initial_buy_amount": initial_buy_amount,
@@ -89,12 +89,28 @@ def indicators(account, data):
                 can_buy = False
                 break
 
-        # Logic for placing buy and sell orders
         if can_buy:
 
             # <==================== Add your custom indicator logic below ====================>
 
             """
+            Your strategy handling here
+
+            Typical handling format:
+
+            1. Get response from your strategy
+            e.g. strategy_1_response = strategies.strategy_1(params)
+
+            2. Check if response came back with a buy signal
+
+            3. If so, call buy() function (as seen below)
+
+            You do not need to worry about triggering sell signals
+            unless you opt not to use stop loss/take profit
+
+
+
+
             <========== Place a buy order: ==========>
             buy(entries, {amount}, price)
 
@@ -103,36 +119,10 @@ def indicators(account, data):
 
             <========== Place a sell order: ==========>
             sell(entries, price)
+            ^ This will not be needed if you are using stoploss/takeprofit
 
             <========== Remove stoploss/takeprofit: ==========>
             stoploss_takeprofit.remove()
-            """
-
-            # Strategy 1
-            strategy_1_response = strategies.bearish_comeback(
-                candles[i - strategy_1_period : i + 1], strategy_1_period
-            )
-            if strategy_1_response["buy"] == True:
-                buy(
-                    entries, strategy_1_response["amount"], strategy_1_response["price"]
-                )
-                stoploss_takeprofit.update(
-                    strategy_1_response["price"],
-                    candles[i]["atr"],
-                    candles[i]["datetime"],
-                )
-            # Strategy 2
-
-            """
-            Format your response as a dict with the values you need.
-
-            Example:
-            
-            response = {
-                "buy": True,
-                "price": current_candle["open"],
-                "amount": config["baseOrderValue"],
-            }
             """
 
         # <==================== Add your custom indicator logic above ====================>
@@ -151,7 +141,7 @@ def indicators(account, data):
         account.balance_absolute = (
             account.uninvested_balance + account.open_position_amount
         )
-        account.profit = account.balance_absolute - config["initialBalance"]
+        account.profit = account.balance_absolute - config["account"]["initialBalance"]
 
         data.ongoing_balance.append(account.balance_absolute)
 

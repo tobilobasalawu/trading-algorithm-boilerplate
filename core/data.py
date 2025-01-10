@@ -9,27 +9,32 @@ import pandas as pd
 def init_graph_data(account):
     config = fetch.get_settings()
 
-    if config["dummyData"] == False:
-        if config["mostRecent"] == False:
+    if config["general"]["dummyData"] == False:
+        if config["general"]["mostRecent"] == False:
             df, ticker = fetch.get_df_selected_tf(
-                config["ticker"], config["interval"], config["startDate"], config["endDate"]
+                config["general"]["ticker"],
+                config["general"]["interval"],
+                config["general"]["startDate"],
+                config["general"]["endDate"],
             )
         else:
             df, ticker = fetch.get_df_recent(
-                config["ticker"], config["interval"], config["timePeriod"]
+                config["general"]["ticker"],
+                config["general"]["interval"],
+                config["general"]["timePeriod"],
             )
     else:
         root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-        csv_path = os.path.join(root_path, config["dummyCsvFileName"])
+        csv_path = os.path.join(root_path, config["general"]["dummyCsvFileName"])
 
         df = pd.read_csv(csv_path, parse_dates=True, index_col=0)
 
         ticker = "Custom"
 
-    ma_period = config["maPeriod"]
-    rsi_period = config["rsiPeriod"]
-    atr_period = config["atrPeriod"]
-    std_dev_period = config["stdDevPeriod"]
+    ma_period = config["indicators"]["maPeriod"]
+    rsi_period = config["indicators"]["rsiPeriod"]
+    atr_period = config["indicators"]["atrPeriod"]
+    std_dev_period = config["indicators"]["stdDevPeriod"]
 
     cutoff_period = max(ma_period, rsi_period, atr_period, std_dev_period)
 
@@ -94,7 +99,7 @@ def init_graph_data(account):
         )
         quit()
 
-    if config["addCsv"] == True:
+    if config["general"]["addCsv"] == True:
         number = utils.generate_number(4)
         df.to_csv(f"z.{data_obj.ticker}_{number}.csv")
 
@@ -128,7 +133,7 @@ def init_graph_data(account):
         "\n=====================================================================================\n"
     )
     print(
-        f"Made {(account.completed_trades)} trades | Win rate: {win_rate}{perc} | {profit_colour}Return: {(((account.balance_absolute / config['initialBalance']) - 1) * 100):.2f}%{reset_colour} | {profit_colour}Profit: ${account.profit:.2f}{reset_colour}\n"
+        f"Made {(account.completed_trades)} trades | Win rate: {win_rate}{perc} | {profit_colour}Return: {(((account.balance_absolute / config['account']['initialBalance']) - 1) * 100):.2f}%{reset_colour} | {profit_colour}Profit: ${account.profit:.2f}{reset_colour}\n"
     )
 
     return data_obj
@@ -137,14 +142,29 @@ def init_graph_data(account):
 def init_sim_data(account):
     config = fetch.get_settings()
 
-    df, ticker = fetch.get_df_selected_tf(
-        config["ticker"], config["interval"], config["startDate"], config["endDate"]
-    )
+    if config["general"]["dummyData"] == False:
+        try:
+            df, ticker = fetch.get_df_selected_tf(
+                config["general"]["ticker"],
+                config["general"]["interval"],
+                config["general"]["startDate"],
+                config["general"]["endDate"],
+            )
+        except:
+            print("Failed to run simulations: Malformed configuration file.")
+            quit()
+    else:
+        root_path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+        csv_path = os.path.join(root_path, config["general"]["dummyCsvFileName"])
 
-    ma_period = config["maPeriod"]
-    rsi_period = config["rsiPeriod"]
-    atr_period = config["atrPeriod"]
-    std_dev_period = config["stdDevPeriod"]
+        df = pd.read_csv(csv_path, parse_dates=True, index_col=0)
+
+        ticker = "Custom"
+
+    ma_period = config["indicators"]["maPeriod"]
+    rsi_period = config["indicators"]["rsiPeriod"]
+    atr_period = config["indicators"]["atrPeriod"]
+    std_dev_period = config["indicators"]["stdDevPeriod"]
 
     cutoff_period = max(ma_period, rsi_period, atr_period, std_dev_period)
 
@@ -208,7 +228,7 @@ def init_sim_data(account):
     data_obj.stoploss_regions = stoploss_regions
     data_obj.takeprofit_regions = takeprofit_regions
 
-    account.profit = account.balance_absolute - config["initialBalance"]
+    account.profit = account.balance_absolute - config["account"]["initialBalance"]
 
     valid = account.check_balance()
     if valid == False:
@@ -225,9 +245,9 @@ def init_backtest_data(all_backtests, account, i):
 
     df, ticker = fetch.get_df_selected_tf(
         all_backtests[i]["ticker"],
-        config["interval"],
-        config["startDate"],
-        config["endDate"],
+        config["general"]["interval"],
+        config["general"]["startDate"],
+        config["general"]["endDate"],
     )
 
     ma_period = all_backtests[i]["ma_period"]
@@ -297,7 +317,7 @@ def init_backtest_data(all_backtests, account, i):
     data_obj.stoploss_regions = stoploss_regions
     data_obj.takeprofit_regions = takeprofit_regions
 
-    account.profit = account.balance_absolute - config["initialBalance"]
+    account.profit = account.balance_absolute - config["account"]["initialBalance"]
 
     valid = account.check_balance()
     if valid == False:

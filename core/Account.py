@@ -67,7 +67,7 @@ class Account:
 
         self.uninvested_balance += return_sum
         self.balance_absolute = self.uninvested_balance
-        self.profit = self.balance_absolute - config["initialBalance"]
+        self.profit = self.balance_absolute - config["account"]["initialBalance"]
         self.completed_trades += 1
         if trade_profit > 0:
             self.profitable_trades += 1
@@ -80,7 +80,7 @@ class Account:
         self.orders.append(order)
 
     def check_balance(self):  # Does an initial balance check
-        if config["initialBalance"] < config["baseOrderValue"]:
+        if config["account"]["initialBalance"] < config["account"]["baseOrderValue"]:
             return False
         else:
             return True

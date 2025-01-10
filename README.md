@@ -101,6 +101,11 @@ Below is a comprehensive list of all configurable settings available in `config.
   - `startDate`: Start date for data when `mostRecent` is `false` (format: `"YYYY-MM-DD"`).
   - `endDate`: End date for data when `mostRecent` is `false` (format: `"YYYY-MM-DD"`).
   - `addCsv`: Boolean (`true`/`false`) to determine whether the candlestick chart data should be exported to a CSV file.
+  - `dummyData`: Boolean (`true`/`false`) to determine whether dummy data in the form of a CSV file at the root should be used instead of API data.
+  - `dummyCsvFileName`: The file name of your dummy CSV file.
+  - `renderStoplossTakeprofit`: Boolean (`true`/`false`) to enable or disable rendering stoploss and takeprofit regions on the chart.
+
+  **NOTE:** _If you wish not to use stop loss/take profit and want to trigger your own sell signals, simply set_ `stoplossAtrMultiplier` _and_ `stoplossAtrMultiplier` _in_ `config.json` _to extremely high values, and set_ `renderStoplossTakeprofit` _to_ `false`_._
 
 - **Indicators**:
 
@@ -109,52 +114,70 @@ Below is a comprehensive list of all configurable settings available in `config.
   - `atrPeriod`: Number of candles used to calculate the Average True Range (ATR).
   - `stdDevPeriod`: Number of candles used to calculate the Standard Deviation.
 
-- **Simulations**:
+- **Simulate**:
+
   - `simulations`: Number of Monte Carlo simulations to run for parameter optimization.
   - `simBestBacktests`: Boolean (`true`/`false`) to enable or disable using the best backtest results for further simulations.
   - `topResultsPercentile`: Percentile of top-performing simulations to save (e.g., `90` for top 10%).
-  - 
-- **Backtesting**:
+  - `writeBacktestsToJSON`: Boolean (`true`/`false`) to enable or disable writing each backtest to a JSON file.
+  - `addToTopResults`: Boolean (`true`/`false`) to enable or disable writing the best backtests from each simulation to the `.BEST-BACKTESTS.json` file.
+  - `topResultsPercentile`: The percentile used to determine the amount of results considered as 'best'.
+
+- **Account**:
+
   - `initialBalance`: Starting balance of the trading account.
   - `baseOrderValue`: Minimum amount allocated for a single trade.
   - `maxOrderValue`: Maximum allowable value for a single trade.
   - `maxConcurrentPositions`: Maximum number of open positions allowed simultaneously.
+
+- **Multipliers**:
   - `buyMultiplier`: Multiplier applied to entry capital for calculating trade size.
   - `bandMultiplier`: Number of standard deviations used for mean reversion triggers.
- 
-- **Stop Loss/Take Profit**:
-  - `stoplossAtrMultiplier`: How many multiples of current ATR value the stoploss is set below buy price
-  - `takeprofitAtrMultiplier`: How many multiples of current ATR value the takeprofit is set above buy price
-  - `renderStoplossTakeprofit`: Boolean (`true`/`false`) to enable or disable rendering stoploss and takeprofit regions on the chart
+  - `stoplossAtrMultiplier`: How many multiples of current ATR value the stoploss is set below buy price.
+  - `takeprofitAtrMultiplier`: How many multiples of current ATR value the takeprofit is set above buy price.
 
 ### Example `config.json`
 
 ```json
 {
-  "ticker": "MSFT",
-  "simulate": false,
-  "simulations": 10,
-  "simBestBacktests": false,
-  "topResultsPercentile": 90,
-  "mostRecent": true,
-  "interval": "1d",
-  "timePeriod": "1y",
-  "startDate": "2020-12-01",
-  "endDate": "2024-12-01",
-  "maPeriod": 50,
-  "rsiPeriod": 7,
-  "atrPeriod": 20,
-  "stdDevPeriod": 20,
-  "addCsv": true,
-  "initialBalance": 10000,
-  "baseOrderValue": 1000,
-  "maxOrderValue": 5000,
-  "maxConcurrentPositions": 4,
-  "buyMultiplier": 1.2,
-  "bandMultiplier": 1.5,
-  "stoplossAtrMultiplier": 1.5,
-  "takeprofitAtrMultiplier": 2.5,
-  "renderStoplossTakeprofit": true
+  "general": {
+    "ticker": "AAPL",
+    "simulate": false,
+    "mostRecent": true,
+    "interval": "1d",
+    "timePeriod": "2y",
+    "startDate": "2021-12-28",
+    "endDate": "2024-12-28",
+    "addCsv": false,
+    "dummyData": true,
+    "dummyCsvFileName": "data.csv",
+    "renderStoplossTakeprofit": true
+  },
+  "indicators": {
+    "maPeriod": 50,
+    "rsiPeriod": 14,
+    "atrPeriod": 14,
+    "stdDevPeriod": 20
+  },
+  "simulate": {
+    "simulations": 100,
+    "simBestBacktests": false,
+    "writeBacktestsToJSON": true,
+    "addToTopResults": true,
+    "topResultsPercentile": 90
+  },
+  "account": {
+    "initialBalance": 10000,
+    "baseOrderValue": 1000,
+    "maxOrderValue": 8000,
+    "maxConcurrentPositions": 5
+  },
+  "multipliers": {
+    "buyMultiplier": 3.0,
+    "bandMultiplier": 1.5,
+    "stoplossAtrMultiplier": 1.25,
+    "takeprofitAtrMultiplier": 3.05
+  }
 }
 ```
 
@@ -162,28 +185,35 @@ Below is a comprehensive list of all configurable settings available in `config.
 
 ## Creating your Algorithm
 
-In order to create a **buy** signal and update your stop loss/take profit, you will need to use these 2 lines of code:
+In order to create a **buy** signal, you will need to use these 3 lines of code:
 
 ```python
 buy(entries, <amount>, <price>)
+stoploss_takeprofit.update(<price>, <atr>, <purchase_date>)
 
 # Example:
 
-buy(entries, config["baseOrderValue"], candles[i]["close"])
-# Place a buy order for the base order amount defined in config.json, buy at the closing price of the current candle
+buy(entries, config["account"]["baseOrderValue"], candles[i]["close"])
+stoploss_takeprofit.update(strategy_1_response["price"], candles[i]["atr"], candles[i]["datetime"])
+
+# Place a buy order at the closing price for the amount defined in config.json and update the stop loss/take profit.
 ```
 
-In order to create a **sell** signal and update your stop loss/take profit, you will need to use these 2 lines of code:
+In order to create a **sell** signal, you will need to use these 3 lines of code:
 
 ```python
 sell(exits, <price>)
+stoploss_takeprofit.remove()
 
 # Example:
 
 sell(exits, candles[i]["close"])
-# Place a sell order at the closing price of the current candle
+stoploss_takeprofit.remove()
+# Place a sell order at the closing price of the current candle and remove stop loss/take profit for the closed position.
 ```
+
 To help your algorithm decide when to create an indicator, you have the following data available **for each rendered candle**:
+
 ```python
 candle["datetime"]  # Datetime of the candle
 candle["open"]  # Open price of the candle
@@ -195,6 +225,7 @@ candle["rsi"]  # Relative strength index at the candle
 candle["atr"]  # Average true range at the candle
 candle["std_dev"]  # Standard deviation at the candle
 ```
+
 You will be able to access these candles by iterating through each entry in the 'candles' list in `order.py`.
 
 ---

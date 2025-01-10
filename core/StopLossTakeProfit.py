@@ -29,18 +29,22 @@ class StopLossTakeProfit:
         self.takeprofit_regions = []
 
     def update(self, entry_price, atr, datetime):
-        self.stoploss = entry_price - (atr * config["stoplossAtrMultiplier"])
-        self.takeprofit = entry_price + (atr * config["takeprofitAtrMultiplier"])
+        self.stoploss = entry_price - (
+            atr * config["multipliers"]["stoplossAtrMultiplier"]
+        )
+        self.takeprofit = entry_price + (
+            atr * config["multipliers"]["takeprofitAtrMultiplier"]
+        )
         self.values_set = True
 
         self.update_stoploss_region(
             y1=entry_price,
-            y0=entry_price - (config["stoplossAtrMultiplier"] * atr),
+            y0=entry_price - (config["multipliers"]["stoplossAtrMultiplier"] * atr),
             x0=datetime,
         )
         self.update_takeprofit_region(
             y0=entry_price,
-            y1=entry_price + (config["takeprofitAtrMultiplier"] * atr),
+            y1=entry_price + (config["multipliers"]["takeprofitAtrMultiplier"] * atr),
             x0=datetime,
         )
 
