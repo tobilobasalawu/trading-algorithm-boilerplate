@@ -93,9 +93,9 @@ def indicators(account, data):
 
             # <==================== Add your custom indicator logic below ====================>
 
-            """
-            Your strategy handling here
+            # Your strategy handling here
 
+            """
             Typical handling format:
 
             1. Get response from your strategy

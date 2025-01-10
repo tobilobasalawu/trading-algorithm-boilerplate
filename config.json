@@ -1,7 +1,7 @@
 {
   "general": {
-    "ticker": "AAPL",
-    "simulate": true,
+    "ticker": "JPM",
+    "simulate": false,
     "mostRecent": true,
     "interval": "1d",
     "timePeriod": "2y",
@@ -14,7 +14,7 @@
   },
   "indicators": {
     "maPeriod": 50,
-    "rsiPeriod": 18,
+    "rsiPeriod": 10,
     "atrPeriod": 16,
     "stdDevPeriod": 26
   },
@@ -28,17 +28,17 @@
   "account": {
     "initialBalance": 10000,
     "baseOrderValue": 1000,
-    "maxOrderValue": 4820,
+    "maxOrderValue": 5224,
     "maxConcurrentPositions": 5
   },
   "multipliers": {
-    "buyMultiplier": 1.4950779818410411,
-    "bandMultiplier": 1.732675058041401,
-    "stoplossAtrMultiplier": 1.73,
-    "takeprofitAtrMultiplier": 3.35
+    "buyMultiplier": 1.6607800313783787,
+    "bandMultiplier": 1.2885586823330233,
+    "stoplossAtrMultiplier": 1.99,
+    "takeprofitAtrMultiplier": 2.73
   },
   "strategy1": {
-    "A": 3.8,
-    "B": 1.27
+    "A": 3.43,
+    "B": 1.51
   }
 }
