@@ -76,102 +76,58 @@ Start the server:
 python main.py
 ```
 
-## Setup result
+Visit [http://127.0.0.1:8050/](http://127.0.0.1:8050/) in your browser to see the charts.
 
-You should now see something like this in your terminal:
+---
 
-```
-Dash is running on http://127.0.0.1:8050/
+## How it Works
 
- * Serving Flask app 'app'
- * Debug mode: on
-```
+1. Data Fetching: The app fetches stock data using the ticker and interval specified in `config.json`.
+2. Indicator Calculations: SMA, RSI, and other metrics are computed for the dataset.
+3. Simulations: Monte Carlo simulations iterate through possible parameter configurations to identify the best-performing strategies.
+4. Visualization: Indicators and trade signals are plotted on an interactive candlestick chart using Plotly.
 
-Paste this URL into your browser and you should see a candlestick graph. Each time you update your code, this graph will automatically update.
+### Configurable Settings
 
-## Creating your algorithm
+Below is a comprehensive list of all configurable settings available in `config.json`:
 
-The app is now all set up for you to start creating your algorithm in the `core/order.py` folder. You will see a section marked out for where to implement your logic, and don't worry - you won't need to install any other external packages from here on unless you wish to.
+- **General**:
 
-### How do I start adding indicators?
+  - `ticker`: The stock ticker to load data for (e.g., `"AAPL"` for Apple).
+  - `simulate`: Boolean (`true`/`false`) to enable or disable simulations.
+  - `mostRecent`: Boolean (`true`/`false`) to specify whether the app uses the most recent data or a custom date range.
+  - `interval`: Time interval between each candle (e.g., `"1d"`, `"60m"`, `"5m"`).
+  - `timePeriod`: Specifies the time period for analysis when `mostRecent` is `true` (e.g., `"5d"`).
+  - `startDate`: Start date for data when `mostRecent` is `false` (format: `"YYYY-MM-DD"`).
+  - `endDate`: End date for data when `mostRecent` is `false` (format: `"YYYY-MM-DD"`).
+  - `addCsv`: Boolean (`true`/`false`) to determine whether the candlestick chart data should be exported to a CSV file.
 
-All indicators that are rendered on the graph are grabbed from the `entries` and `exits` dictionaries within the `order.py` file - this is where you'll be implementing your logic. They take a key (a datetime: string) and a value (close price: integer) - this is the closing price for any given candle.
+- **Indicators**:
 
-```python
-# Format => datetime (string): close price (integer)
-entries = {
-    "2024-12-01": 100
-    "2024-12-03": 80
-}
+  - `maPeriod`: Number of candles used to calculate the Simple Moving Average (SMA).
+  - `rsiPeriod`: Number of candles used to calculate the Relative Strength Index (RSI).
+  - `atrPeriod`: Number of candles used to calculate the Average True Range (ATR).
+  - `stdDevPeriod`: Number of candles used to calculate the Standard Deviation.
 
-exits = {
-    "2024-12-02": 120
-    "2024-12-04": 110
-}
-```
+- **Simulations**:
+  - `simulations`: Number of Monte Carlo simulations to run for parameter optimization.
+  - `simBestBacktests`: Boolean (`true`/`false`) to enable or disable using the best backtest results for further simulations.
+  - `topResultsPercentile`: Percentile of top-performing simulations to save (e.g., `90` for top 10%).
+  - 
+- **Backtesting**:
+  - `initialBalance`: Starting balance of the trading account.
+  - `baseOrderValue`: Minimum amount allocated for a single trade.
+  - `maxOrderValue`: Maximum allowable value for a single trade.
+  - `maxConcurrentPositions`: Maximum number of open positions allowed simultaneously.
+  - `buyMultiplier`: Multiplier applied to entry capital for calculating trade size.
+  - `bandMultiplier`: Number of standard deviations used for mean reversion triggers.
+ 
+- **Stop Loss/Take Profit**:
+  - `stoplossAtrMultiplier`: How many multiples of current ATR value the stoploss is set below buy price
+  - `takeprofitAtrMultiplier`: How many multiples of current ATR value the takeprofit is set above buy price
+  - `renderStoplossTakeprofit`: Boolean (`true`/`false`) to enable or disable rendering stoploss and takeprofit regions on the chart
 
-In order to add **entries**, you will need to use these 3 lines of code:
-
-```python
-entries = indicator.add(entries, "2024-12-01", 20) # "2024-12-01" = your datetime, 20 = closing price for a given candle
-account.buy_order(100, 20) # 100 = base order value, 20 = closing price for a given candle
-log.append("BUY")
-```
-
-In order to add **exits**, you will need to use these 3 lines of code:
-
-```python
-exits = indicator.add(exits, "2024-12-01", 20) # "2024-12-01" = your datetime, 20 = closing price for a given candle
-account.sell_order(20) # 20 = closing price for a given candle
-log.append("SELL")
-```
-
-To help your algorithm decide when to create an indicator, you have the following data available **for all rendered candles**:
-
-- `datetimes`: A list of all datetimes.
-- `opens`: A list of opening prices.
-- `closes`: A list of closing prices.
-- `highs`: A list of high prices.
-- `lows`: A list of low prices.
-- `account.rsi`: A list of RSI values.
-- `account.sma`: A list of SMA values.
-
-All these values line up for each of your candles. For example, if you took:
-
-```python
-datetimes[6]
-opens[6]
-account.rsi[6]
-```
-
-Each value would correlate to the same candle; the 7th candle.
-
-If you shut your app down and decide you want to re-run it, you won't have to create a new virtual environment, you'll just have to re-activate your existing one in a new terminal.
-
-## Testing your algorithm
-
-If you've made some changes and you'd like to see them in action, you can either wait for the web page to update (it updates every time you save your code), or you can reactivate your virtual environment by following the setup steps above and running `python main.py` if you're using Windows or `python3 main.py` if you're using MacOS/Linux.
-
-## Docs
-
-All the configurable settings can be found in [config.json](https://github.com/JamieWells1/trading-indicator/blob/main/config.json). Have a play around with this and decide what settings you want for your trading strategy.
-
-## config.json
-
-- `ticker`: Change the stock being loaded
-- `mostRecent`: Set whether the chart uses the most recent data for the loaded stock
-- `interval`: Specifies the time interval between each candle in the chart
-- `startDate`: Set when the chart should load data from (only applies if `mostRecent` is set to false)
-- `endDate`: Set when the chart should load data up to (only applies if `mostRecent` is set to false)
-- `timePeriod`: Specifies the time period used for analyzing data (only applies if `mostRecent` is set to true)
-- `movingAvg`: Specifies whether to calculate and display a **Moving Average** (MA) on the chart
-- `maPeriod`: Defines the period (number of candles) used to calculate the Moving Average
-- `rsiPeriod`: Defines the period (number of candles) used to calculate the **Relative Strength Index** (RSI)
-- `addCsv`: Determines whether or not to export the chart's data to a CSV file (available at root folder directory)
-- `initialBalance`: Specifies the initial balance of the trading account
-- `baseOrderValue`: Defines the base amount used for each trade order
-
-Example JSON configuration:
+### Example `config.json`
 
 ```json
 {
@@ -210,7 +166,6 @@ In order to create a **buy** signal and update your stop loss/take profit, you w
 
 ```python
 buy(entries, <amount>, <price>)
-
 
 # Example:
 
