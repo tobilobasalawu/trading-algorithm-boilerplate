@@ -70,9 +70,7 @@ def indicators(account, data):
     }
     rules = Rules(payload)
 
-    strategy_1_period = 7
-
-    for i in range(strategy_1_period, len(candles)):
+    for i in range(len(candles)):
 
         payload = {
             "initial_buy_amount": initial_buy_amount,
@@ -91,12 +89,28 @@ def indicators(account, data):
                 can_buy = False
                 break
 
-        # Logic for placing buy and sell orders
         if can_buy:
 
             # <==================== Add your custom indicator logic below ====================>
 
             """
+            Your strategy handling here
+
+            Typical handling format:
+
+            1. Get response from your strategy
+            e.g. strategy_1_response = strategies.strategy_1(params)
+
+            2. Check if response came back with a buy signal
+
+            3. If so, call buy() function (as seen below)
+
+            You do not need to worry about triggering sell signals
+            unless you opt not to use stop loss/take profit
+
+
+
+
             <========== Place a buy order: ==========>
             buy(entries, {amount}, price)
 
@@ -105,26 +119,11 @@ def indicators(account, data):
 
             <========== Place a sell order: ==========>
             sell(entries, price)
+            ^ This will not be needed if you are using stoploss/takeprofit
 
             <========== Remove stoploss/takeprofit: ==========>
             stoploss_takeprofit.remove()
             """
-
-            # Strategy 1
-            strategy_1_response = strategies.bearish_comeback(
-                candles[i - strategy_1_period : i + 1], strategy_1_period
-            )
-            if strategy_1_response["buy"] == True:
-                buy(
-                    entries, strategy_1_response["amount"], strategy_1_response["price"]
-                )
-                stoploss_takeprofit.update(
-                    strategy_1_response["price"],
-                    candles[i]["atr"],
-                    candles[i]["datetime"],
-                )
-
-            # Strategy 2
 
         # <==================== Add your custom indicator logic above ====================>
 
