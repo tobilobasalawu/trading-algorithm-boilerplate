@@ -3,6 +3,18 @@ import math
 
 config = api.get_settings()
 
+"""
+Format your strategies responses as a dict with the values you need.
+
+Example:
+
+response = {
+    "buy": True,
+    "price": current_candle["open"],
+    "amount": config["account"]["baseOrderValue"],
+}
+"""
+
 
 # This strategy will buy if the price is considerably below the moving average and the stock has recently experienced a sharp decline in share price.
 def bearish_comeback(candles, period):

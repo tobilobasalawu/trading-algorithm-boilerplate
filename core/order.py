@@ -123,19 +123,8 @@ def indicators(account, data):
                     candles[i]["atr"],
                     candles[i]["datetime"],
                 )
+
             # Strategy 2
-
-            """
-            Format your response as a dict with the values you need.
-
-            Example:
-            
-            response = {
-                "buy": True,
-                "price": current_candle["open"],
-                "amount": config["account"]["baseOrderValue"],
-            }
-            """
 
         # <==================== Add your custom indicator logic above ====================>
 
