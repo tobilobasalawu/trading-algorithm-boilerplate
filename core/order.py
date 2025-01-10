@@ -60,7 +60,9 @@ def indicators(account, data):
         account.sell_order(candles[i]["datetime"], price)
         log.append("SELL")
 
-    initial_buy_amount = config["baseOrderValue"] * config["buyMultiplier"]
+    initial_buy_amount = (
+        config["account"]["baseOrderValue"] * config["multipliers"]["buyMultiplier"]
+    )
     payload = {
         "z": 0,
         "initial_buy_amount": 0,
@@ -131,7 +133,7 @@ def indicators(account, data):
             response = {
                 "buy": True,
                 "price": current_candle["open"],
-                "amount": config["baseOrderValue"],
+                "amount": config["account"]["baseOrderValue"],
             }
             """
 
@@ -151,7 +153,7 @@ def indicators(account, data):
         account.balance_absolute = (
             account.uninvested_balance + account.open_position_amount
         )
-        account.profit = account.balance_absolute - config["initialBalance"]
+        account.profit = account.balance_absolute - config["account"]["initialBalance"]
 
         data.ongoing_balance.append(account.balance_absolute)
 

@@ -35,7 +35,7 @@ app.layout = html.Div(
 # update_graph() will run every time the app is updated. App will automatically update when you save your code.
 def update_graph(n_intervals):
 
-    if config["simulate"] == True:
+    if config["general"]["simulate"] == True:
         try:
             return graph.simulate()
 

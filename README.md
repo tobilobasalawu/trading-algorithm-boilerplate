@@ -101,6 +101,9 @@ Below is a comprehensive list of all configurable settings available in `config.
   - `startDate`: Start date for data when `mostRecent` is `false` (format: `"YYYY-MM-DD"`).
   - `endDate`: End date for data when `mostRecent` is `false` (format: `"YYYY-MM-DD"`).
   - `addCsv`: Boolean (`true`/`false`) to determine whether the candlestick chart data should be exported to a CSV file.
+  - `dummyData`: Boolean (`true`/`false`) to determine whether dummy data in the form of a CSV file at the root should be used instead of API data.
+  - `dummyCsvFileName`: The file name of your dummy CSV file.
+  - `renderStoplossTakeprofit`: Boolean (`true`/`false`) to enable or disable rendering stoploss and takeprofit regions on the chart.
 
 - **Indicators**:
 
@@ -109,23 +112,27 @@ Below is a comprehensive list of all configurable settings available in `config.
   - `atrPeriod`: Number of candles used to calculate the Average True Range (ATR).
   - `stdDevPeriod`: Number of candles used to calculate the Standard Deviation.
 
-- **Simulations**:
+- **Simulate**:
+
   - `simulations`: Number of Monte Carlo simulations to run for parameter optimization.
   - `simBestBacktests`: Boolean (`true`/`false`) to enable or disable using the best backtest results for further simulations.
   - `topResultsPercentile`: Percentile of top-performing simulations to save (e.g., `90` for top 10%).
-  - 
-- **Backtesting**:
+  - `writeBacktestsToJSON`: Boolean (`true`/`false`) to enable or disable writing each backtest to a JSON file.
+  - `addToTopResults`: Boolean (`true`/`false`) to enable or disable writing the best backtests from each simulation to the `.BEST-BACKTESTS.json` file.
+  - `topResultsPercentile`: The percentile used to determine the amount of results considered as 'best'.
+
+- **Account**:
+
   - `initialBalance`: Starting balance of the trading account.
   - `baseOrderValue`: Minimum amount allocated for a single trade.
   - `maxOrderValue`: Maximum allowable value for a single trade.
   - `maxConcurrentPositions`: Maximum number of open positions allowed simultaneously.
+
+- **Multipliers**:
   - `buyMultiplier`: Multiplier applied to entry capital for calculating trade size.
   - `bandMultiplier`: Number of standard deviations used for mean reversion triggers.
- 
-- **Stop Loss/Take Profit**:
-  - `stoplossAtrMultiplier`: How many multiples of current ATR value the stoploss is set below buy price
-  - `takeprofitAtrMultiplier`: How many multiples of current ATR value the takeprofit is set above buy price
-  - `renderStoplossTakeprofit`: Boolean (`true`/`false`) to enable or disable rendering stoploss and takeprofit regions on the chart
+  - `stoplossAtrMultiplier`: How many multiples of current ATR value the stoploss is set below buy price.
+  - `takeprofitAtrMultiplier`: How many multiples of current ATR value the takeprofit is set above buy price.
 
 ### Example `config.json`
 
@@ -169,7 +176,7 @@ buy(entries, <amount>, <price>)
 
 # Example:
 
-buy(entries, config["baseOrderValue"], candles[i]["close"])
+buy(entries, config["account"]["baseOrderValue"], candles[i]["close"])
 # Place a buy order for the base order amount defined in config.json, buy at the closing price of the current candle
 ```
 
@@ -183,7 +190,9 @@ sell(exits, <price>)
 sell(exits, candles[i]["close"])
 # Place a sell order at the closing price of the current candle
 ```
+
 To help your algorithm decide when to create an indicator, you have the following data available **for each rendered candle**:
+
 ```python
 candle["datetime"]  # Datetime of the candle
 candle["open"]  # Open price of the candle
@@ -195,6 +204,7 @@ candle["rsi"]  # Relative strength index at the candle
 candle["atr"]  # Average true range at the candle
 candle["std_dev"]  # Standard deviation at the candle
 ```
+
 You will be able to access these candles by iterating through each entry in the 'candles' list in `order.py`.
 
 ---

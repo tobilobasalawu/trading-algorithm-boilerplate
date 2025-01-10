@@ -8,8 +8,8 @@ class Rules:
 
     def balance_valid(self):
         initial_buy_amount = self.payload["initial_buy_amount"]
-        if initial_buy_amount > self.config["maxOrderValue"]:
-            initial_buy_amount = self.config["maxOrderValue"]
+        if initial_buy_amount > self.config["account"]["maxOrderValue"]:
+            initial_buy_amount = self.config["account"]["maxOrderValue"]
         if initial_buy_amount > (self.payload["account"]).uninvested_balance:
             initial_buy_amount = (self.payload["account"]).uninvested_balance
 
@@ -22,7 +22,7 @@ class Rules:
 
     def max_positions_reached(self):
         account = self.payload["account"]
-        if account.open_positions >= self.config["maxConcurrentPositions"]:
+        if account.open_positions >= self.config["account"]["maxConcurrentPositions"]:
             return False
         else:
             return True

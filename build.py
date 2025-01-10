@@ -14,8 +14,8 @@ def build():
     config = fetch.get_settings()
 
     account = Account(
-        uninvested_balance=config["initialBalance"],
-        balance_absolute=config["initialBalance"],
+        uninvested_balance=config["account"]["initialBalance"],
+        balance_absolute=config["account"]["initialBalance"],
         orders=[],
         profit=0,
         open_position_amount=0,
@@ -100,7 +100,7 @@ def build():
         col=1,
     )
 
-    if config["renderStoplossTakeprofit"] == True:
+    if config["general"]["renderStoplossTakeprofit"] == True:
         for region in data.takeprofit_regions:
             fig.add_shape(
                 type="rect",
@@ -157,8 +157,8 @@ def simulate():
 
     config = fetch.get_settings()
 
-    if config["simBestBacktests"] == False:
-        iterations = config["simulations"]
+    if config["simulate"]["simBestBacktests"] == False:
+        iterations = config["simulate"]["simulations"]
     else:
         all_best_backtests = utils.variables.load_best_backtests()
         if len(all_best_backtests) > 0:
@@ -171,8 +171,8 @@ def simulate():
     for i in range(iterations):
 
         account = Account(
-            uninvested_balance=config["initialBalance"],
-            balance_absolute=config["initialBalance"],
+            uninvested_balance=config["account"]["initialBalance"],
+            balance_absolute=config["account"]["initialBalance"],
             orders=[],
             profit=0,
             open_position_amount=0,
@@ -187,7 +187,7 @@ def simulate():
         utils.variables.randomise()
         config = fetch.get_settings()
 
-        if config["simBestBacktests"] == False:
+        if config["simulate"]["simBestBacktests"] == False:
             data = core.data.init_sim_data(account)
         else:
             try:
@@ -205,17 +205,17 @@ def simulate():
         account.win_rate = win_rate
 
         # If new random backtests are being generated
-        if config["simBestBacktests"] == True:
+        if config["simulate"]["simBestBacktests"] == True:
             backtest_result = Backtest(
                 unique_id=utils.variables.generate_uid(6),
                 ticker=all_best_backtests[i]["ticker"],
                 sim_period=len(data.closes),
-                total_investment=config["initialBalance"],
+                total_investment=config["account"]["initialBalance"],
                 final_amount=round(account.balance_absolute, 2),
                 total_return=round(
                     (
-                        (account.balance_absolute - config["initialBalance"])
-                        / config["initialBalance"]
+                        (account.balance_absolute - config["account"]["initialBalance"])
+                        / config["account"]["initialBalance"]
                         * 100
                     ),
                     2,
@@ -245,31 +245,35 @@ def simulate():
         else:
             backtest_result = Backtest(
                 unique_id=utils.variables.generate_uid(6),
-                ticker=config["ticker"],
+                ticker=config["general"]["ticker"],
                 sim_period=len(data.closes),
-                total_investment=config["initialBalance"],
+                total_investment=config["account"]["initialBalance"],
                 final_amount=round(account.balance_absolute, 2),
                 total_return=round(
                     (
-                        (account.balance_absolute - config["initialBalance"])
-                        / config["initialBalance"]
+                        (account.balance_absolute - config["account"]["initialBalance"])
+                        / config["account"]["initialBalance"]
                         * 100
                     ),
                     2,
                 ),
                 win_rate=round(win_rate, 2),
-                ma_period=config["maPeriod"],
-                rsi_period=config["rsiPeriod"],
-                atr_period=config["atrPeriod"],
-                std_dev_period=config["stdDevPeriod"],
-                max_order_value=config["maxOrderValue"],
-                max_concurrent_positions=config["maxConcurrentPositions"],
-                buy_multiplier=round(config["buyMultiplier"], 2),
-                band_multiplier=round(config["bandMultiplier"], 2),
+                ma_period=config["indicators"]["maPeriod"],
+                rsi_period=config["indicators"]["rsiPeriod"],
+                atr_period=config["indicators"]["atrPeriod"],
+                std_dev_period=config["indicators"]["stdDevPeriod"],
+                max_order_value=config["account"]["maxOrderValue"],
+                max_concurrent_positions=config["account"]["maxConcurrentPositions"],
+                buy_multiplier=round(config["multipliers"]["buyMultiplier"], 2),
+                band_multiplier=round(config["multipliers"]["bandMultiplier"], 2),
                 A_strategy_1=round(config["strategy1"]["A"], 2),
                 B_strategy_1=round(config["strategy1"]["B"], 2),
-                stoploss_atr_multiplier=round(config["stoplossAtrMultiplier"], 2),
-                takeprofit_atr_multiplier=round(config["takeprofitAtrMultiplier"], 2),
+                stoploss_atr_multiplier=round(
+                    config["multipliers"]["stoplossAtrMultiplier"], 2
+                ),
+                takeprofit_atr_multiplier=round(
+                    config["multipliers"]["takeprofitAtrMultiplier"], 2
+                ),
             )
 
         line = go.Scatter(
@@ -310,10 +314,10 @@ def simulate():
         ]
 
     final_amounts_percentile = np.percentile(
-        final_amounts, config["topResultsPercentile"]
+        final_amounts, config["simulate"]["topResultsPercentile"]
     )
     total_returns_percentile = np.percentile(
-        total_returns, config["topResultsPercentile"]
+        total_returns, config["simulate"]["topResultsPercentile"]
     )
 
     top_backtests_count = 0
@@ -322,24 +326,24 @@ def simulate():
         if (
             result.final_amount > final_amounts_percentile
             or result.total_return > total_returns_percentile
-        ) and config["simBestBacktests"] == False:
-            if config["addToTopResults"] == True:
+        ) and config["simulate"]["simBestBacktests"] == False:
+            if config["simulate"]["addToTopResults"] == True:
                 utils.variables.add_to_top_results(result)
             top_backtests_count += 1
         elif (
             result.final_amount > final_amounts_percentile
             or result.total_return > total_returns_percentile
-        ) and config["simBestBacktests"] == True:
+        ) and config["simulate"]["simBestBacktests"] == True:
             new_best_backtests.append(result)
             top_backtests_count += 1
 
-    if config["simBestBacktests"] == True:
+    if config["simulate"]["simBestBacktests"] == True:
         utils.variables.overwrite_top_results(new_best_backtests)
 
     for i in range(len(chart_lines)):
         chart_lines[i]["y"] = ongoing_balances[i]
 
-    if config["writeBacktestsToJSON"] == True:
+    if config["simulate"]["writeBacktestsToJSON"] == True:
         simulation_id = utils.variables.write_to_json(all_backtests)
     else:
         simulation_id = utils.variables.generate_uid(6)

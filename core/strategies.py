@@ -36,7 +36,7 @@ def bearish_comeback(candles, period):
             response = {
                 "buy": True,
                 "price": current_candle["open"],
-                "amount": config["baseOrderValue"] * ratio,
+                "amount": config["account"]["baseOrderValue"] * ratio,
             }
         else:
             response = {
