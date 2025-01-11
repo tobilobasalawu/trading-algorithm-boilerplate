@@ -4,7 +4,7 @@
     "simulate": true,
     "mostRecent": true,
     "interval": "1d",
-    "timePeriod": "3y",
+    "timePeriod": "2y",
     "startDate": "2021-12-28",
     "endDate": "2024-12-28",
     "addCsv": false,
@@ -15,8 +15,8 @@
   "indicators": {
     "maPeriod": 50,
     "shortMaPeriod": 10,
-    "rsiPeriod": 14,
-    "atrPeriod": 15,
+    "rsiPeriod": 20,
+    "atrPeriod": 22,
     "stdDevPeriod": 26
   },
   "simulate": {
@@ -29,22 +29,22 @@
   "account": {
     "initialBalance": 10000,
     "baseOrderValue": 1000,
-    "maxOrderValue": 2017,
+    "maxOrderValue": 4538,
     "maxConcurrentPositions": 5
   },
   "multipliers": {
-    "buyMultiplier": 1.5900271408326598,
-    "bandMultiplier": 1.2234189528941122,
-    "stoplossAtrMultiplier": 1.41,
-    "takeprofitAtrMultiplier": 2.59
+    "buyMultiplier": 2.8362099568928585,
+    "bandMultiplier": 1.1755042604613792,
+    "stoplossAtrMultiplier": 1.92,
+    "takeprofitAtrMultiplier": 3.37
   },
   "strategy1": {
-    "A": 3.55,
-    "B": 1.51
+    "A": 3.59,
+    "B": 1.61
   },
   "momentumReversion": {
-    "shortMaPeriod": 8,
-    "longMaPeriod": 60,
+    "shortMaPeriod": 7,
+    "longMaPeriod": 47,
     "meanReversionThreshold": 0.09
   }
 }
