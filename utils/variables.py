@@ -26,6 +26,11 @@ def randomise():
         random.uniform(2.5, 3.5), 2
     )
 
+    # New randomization for momentum-reversion strategy
+    config["momentumReversion"]["shortMaPeriod"] = random.randint(5, 15)  # Random short MA period
+    config["momentumReversion"]["longMaPeriod"] = random.randint(20, 60)   # Random long MA period
+    config["momentumReversion"]["meanReversionThreshold"] = round(random.uniform(0.03, 0.1), 2)  # Random threshold between 3% and 10%
+
     with open("config.json", "w") as settings:
         json.dump(config, settings, indent=2)
 

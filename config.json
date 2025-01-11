@@ -1,10 +1,10 @@
 {
   "general": {
-    "ticker": "JPM",
-    "simulate": false,
+    "ticker": "APP",
+    "simulate": true,
     "mostRecent": true,
     "interval": "1d",
-    "timePeriod": "2y",
+    "timePeriod": "3y",
     "startDate": "2021-12-28",
     "endDate": "2024-12-28",
     "addCsv": false,
@@ -14,8 +14,9 @@
   },
   "indicators": {
     "maPeriod": 50,
-    "rsiPeriod": 10,
-    "atrPeriod": 16,
+    "shortMaPeriod": 10,
+    "rsiPeriod": 14,
+    "atrPeriod": 15,
     "stdDevPeriod": 26
   },
   "simulate": {
@@ -28,17 +29,22 @@
   "account": {
     "initialBalance": 10000,
     "baseOrderValue": 1000,
-    "maxOrderValue": 5224,
+    "maxOrderValue": 2017,
     "maxConcurrentPositions": 5
   },
   "multipliers": {
-    "buyMultiplier": 1.6607800313783787,
-    "bandMultiplier": 1.2885586823330233,
-    "stoplossAtrMultiplier": 1.99,
-    "takeprofitAtrMultiplier": 2.73
+    "buyMultiplier": 1.5900271408326598,
+    "bandMultiplier": 1.2234189528941122,
+    "stoplossAtrMultiplier": 1.41,
+    "takeprofitAtrMultiplier": 2.59
   },
   "strategy1": {
-    "A": 3.43,
+    "A": 3.55,
     "B": 1.51
+  },
+  "momentumReversion": {
+    "shortMaPeriod": 8,
+    "longMaPeriod": 60,
+    "meanReversionThreshold": 0.09
   }
 }

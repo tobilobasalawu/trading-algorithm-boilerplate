@@ -91,39 +91,23 @@ def indicators(account, data):
 
         if can_buy:
 
-            # <==================== Add your custom indicator logic below ====================>
 
-            # Your strategy handling here
+            #Momentum Reversion Strategy
+            
+            # Get response from your momentum-reversion strategy
+            strategy_response = strategies.momentum_reversion_strategy(candles[:i+1])  # Pass candles up to the current index
 
-            """
-            Typical handling format:
+            # Check if response came back with a buy signal
+            if strategy_response["buy"]:
+                buy(entries, strategy_response["amount"], strategy_response["price"])
+                stoploss_takeprofit.update(strategy_response["price"], candles[i]["atr"], candles[i]["datetime"])
 
-            1. Get response from your strategy
-            e.g. strategy_1_response = strategies.strategy_1(params)
+            # Check if response came back with a sell signal
+            if strategy_response["sell"]:
+                sell(exits, strategy_response["price"])
 
-            2. Check if response came back with a buy signal
-
-            3. If so, call buy() function (as seen below)
-
-            You do not need to worry about triggering sell signals
-            unless you opt not to use stop loss/take profit
-
-
-
-
-            <========== Place a buy order: ==========>
-            buy(entries, {amount}, price)
-
-            <========== Update stoploss/takeprofit: ==========>
-            stoploss_takeprofit.update(price, atr, purchase_date)
-
-            <========== Place a sell order: ==========>
-            sell(entries, price)
-            ^ This will not be needed if you are using stoploss/takeprofit
-
-            <========== Remove stoploss/takeprofit: ==========>
-            stoploss_takeprofit.remove()
-            """
+            # <========== Update stoploss/takeprofit: ==========>
+            # This is already handled in the buy function above
 
         # <==================== Add your custom indicator logic above ====================>
 
@@ -155,3 +139,4 @@ def indicators(account, data):
         stoploss_takeprofit.stoploss_regions,
         stoploss_takeprofit.takeprofit_regions,
     )
+
